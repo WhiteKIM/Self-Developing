@@ -26,4 +26,13 @@ public abstract class Problem extends BaseEntity {
     private Image image; // 문제내용 - 이미지
 
     private String comment; //해설
+
+    public void update(Problem updateProblem) {
+        this.title = updateProblem.getTitle();
+        this.round = updateProblem.getRound();
+        this.subject = updateProblem.getSubject();
+        this.problem = updateProblem.getProblem();
+        this.image = updateProblem.getImage();
+        this.comment = updateProblem.getComment();
+    }
 }
