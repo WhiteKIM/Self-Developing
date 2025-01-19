@@ -8,6 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+/**
+ * 자격증 정보
+ * 자격증 명, 시험시간, 과목개수 등의 정보를 나타냄
+ */
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +21,8 @@ import lombok.NoArgsConstructor;
 public class Certification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                // PK
-    private String certName;   // 자격증명
+    private Long id;                    // PK
+    private String certName;            // 자격증명
+    private LocalDateTime examTime;     // 시험시간
+    private Long subjectCount;          // 과목 개수
 }
