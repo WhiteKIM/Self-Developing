@@ -25,6 +25,10 @@ public abstract class Problem extends BaseEntity {
     @JoinColumn(name = "image_id")
     private Image image; // 문제내용 - 이미지
 
+    @ManyToOne
+    @JoinColumn(name = "paper_id")
+    private Paper paper;
+
     private String comment; //해설
 
     public void update(Problem updateProblem) {
@@ -34,5 +38,9 @@ public abstract class Problem extends BaseEntity {
         this.problem = updateProblem.getProblem();
         this.image = updateProblem.getImage();
         this.comment = updateProblem.getComment();
+    }
+
+    public void appendedPaper(Paper paper) {
+        this.paper = paper;
     }
 }
