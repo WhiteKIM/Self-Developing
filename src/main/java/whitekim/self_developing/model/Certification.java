@@ -1,9 +1,6 @@
 package whitekim.self_developing.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +19,7 @@ public class Certification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                    // PK
+    @Column(unique = true)
     private String certName;            // 자격증명
     private LocalDateTime examTime;     // 시험시간
     private Long subjectCount;          // 과목 개수

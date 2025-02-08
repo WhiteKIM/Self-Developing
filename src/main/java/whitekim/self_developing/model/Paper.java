@@ -16,6 +16,7 @@ import java.util.List;
 public class Paper extends BaseEntity {
     private String title;   // 문제지 제목
     private Long timeLimit; // 제한시간 => 해당값이 존재하면 시간제한 문제집
+    private PaperType type;
 
     @OneToOne
     @JoinColumn(name = "certification_id")

@@ -2,10 +2,15 @@ package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.Problem;
+import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.ProblemRepository;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,9 +18,11 @@ import java.util.Optional;
 @Transactional
 public abstract class ProblemService<T extends Problem> {
     private final ProblemRepository<T> problemRepository;
+    private final CertRepository certRepository;
 
-    public ProblemService(ProblemRepository<T> problemRepository) {
+    public ProblemService(ProblemRepository<T> problemRepository, CertRepository certRepository) {
         this.problemRepository = problemRepository;
+        this.certRepository = certRepository;
     }
 
     /**
@@ -25,6 +32,27 @@ public abstract class ProblemService<T extends Problem> {
      */
     public Optional<T> getProblem(Long id) {
         return problemRepository.findById(id);
+    }
+
+    /**
+     * 무한 문제 풀이
+     * 랜덤으로 해당 자격증 내에 등록된 문제 중에서 하나를 랜덤하게 가져옴
+     * @param certName - 지격증명
+     * @return - 랜덤한 문제
+     */
+    public T getRandomProblem(String certName) {
+        Optional<Certification> optCert = certRepository.findByCertName(certName);
+
+        if(optCert.isEmpty())
+            throw new RuntimeException();
+
+        Long size = problemRepository.countByCertification(optCert.get());
+
+        int index = (int) (Math.random() * size);
+        PageRequest pageRequest = PageRequest.of(index, 1);
+        Page<T> problemPage = problemRepository.findAllByCertification(optCert.get(), pageRequest);
+
+        return problemPage.getContent().getFirst();
     }
 
     /**
