@@ -5,15 +5,17 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import whitekim.self_developing.exception.InValidationTokenException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class JwtUtils {
     public static JwtUtils jwtUtils;
 
@@ -38,7 +40,7 @@ public class JwtUtils {
      */
     public void publishToken(String username, HttpServletResponse response) {
         // 이전에 발행된 리프레시 토큰이 존재하고, 해당 토큰이 유효한 경우
-        if(tokenStore.containsKey(username) && verifyRefreshToken(tokenStore.get(username).getToken())) {
+        if(tokenStore.containsKey(username) && !verifyRefreshToken(tokenStore.get(username).getToken()).isBlank()) {
             AccessToken accessToken = publishAccessToken(username);
             response.setHeader("Access-Token", accessToken.getToken());
             return;
@@ -63,13 +65,12 @@ public class JwtUtils {
 
         // 엑세스 토큰으로만 요청한 경우
         if(refreshToken.isBlank()) {
-            if(!verifyAccessToken(accessToken)) {
+            if(!verifyAccessToken(accessToken).isBlank()) {
                 throw new InValidationTokenException("Invalid Access Token");
             }
 
-            return true;
         } else {
-            if(!verifyRefreshToken(refreshToken)) {
+            if(!verifyRefreshToken(refreshToken).isBlank()) {
                 // 새롭게 토큰을 모두 발행해야 한다.
                 throw new InValidationTokenException("Invalid Refresh Token");
             }
@@ -80,8 +81,8 @@ public class JwtUtils {
 
             response.setHeader("Access-Token", token.getToken());
 
-            return true;
         }
+        return true;
     }
 
     /**
@@ -115,18 +116,29 @@ public class JwtUtils {
         return new AccessToken(username, token);
     }
 
+
     /**
      * 엑세스 토큰 검증
      */
-    public boolean verifyAccessToken(String accessToken) {
-        return true;
+    public String verifyAccessToken(String accessToken) {
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(accessToken);
+
+        if(!claimsJws.getPayload().getExpiration().before(new Date())) {
+            // 만료된 토큰
+            return null;
+        }
+
+        return claimsJws.getPayload().getSubject();
     }
 
     /**
      * 리프레시 토큰 검증
      */
-    public boolean verifyRefreshToken(String refreshToken) {
-        return true;
+    public String verifyRefreshToken(String refreshToken) {
+        return null;
     }
 
     /**
