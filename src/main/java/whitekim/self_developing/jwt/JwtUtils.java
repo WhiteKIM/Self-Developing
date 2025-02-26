@@ -138,7 +138,17 @@ public class JwtUtils {
      * 리프레시 토큰 검증
      */
     public String verifyRefreshToken(String refreshToken) {
-        return null;
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(refreshToken);
+
+        if(!claimsJws.getPayload().getExpiration().before(new Date())) {
+            // 만료된 토큰
+            return null;
+        }
+
+        return claimsJws.getPayload().getSubject();
     }
 
     /**

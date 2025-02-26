@@ -40,6 +40,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if(username.isBlank()) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setHeader("Message", "Invalid Access Token");
+            response.sendRedirect("/api/v1/reissue/accessToken");
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

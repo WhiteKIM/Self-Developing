@@ -21,6 +21,7 @@ public class PaperService {
     private final ProblemService<Problem> problemService;
     private final CertService certService;
 
+
     /**
      * 시험지를 등록합니다.
      * @param paper
@@ -54,4 +55,6 @@ public class PaperService {
 
         return paperRepository.findByCertificationAndPaperType(cert, type);
     }
+
+
 }

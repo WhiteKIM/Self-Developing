@@ -6,8 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.model.Certification;
+import whitekim.self_developing.model.ChoiceProblem;
+import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.repository.CertRepository;
+import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
 
 import java.awt.print.Pageable;
@@ -19,10 +22,29 @@ import java.util.Optional;
 public abstract class ProblemService<T extends Problem> {
     private final ProblemRepository<T> problemRepository;
     private final CertRepository certRepository;
+    private final PaperRepository paperRepository;
 
-    public ProblemService(ProblemRepository<T> problemRepository, CertRepository certRepository) {
+    public ProblemService(ProblemRepository<T> problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
         this.problemRepository = problemRepository;
         this.certRepository = certRepository;
+        this.paperRepository = paperRepository;
+    }
+
+    /**
+     * 다건 문제 조회
+     * 문제집 내에 속한 모든 문제를 가져온다.
+     * @param paperId
+     * @return
+     */
+    public List<T> findAllByPaper(Long paperId) {
+        Optional<Paper> optionalPaper = paperRepository.findById(paperId);
+
+        if(optionalPaper.isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        Paper paper = optionalPaper.get();
+        return (List<T>) paper.getProblemList();
     }
 
     /**
@@ -112,4 +134,6 @@ public abstract class ProblemService<T extends Problem> {
             problemRepository.deleteById(id);
         }
     }
+
+
 }

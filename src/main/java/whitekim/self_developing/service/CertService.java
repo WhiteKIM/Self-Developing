@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.repository.CertRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,6 +17,10 @@ public class CertService {
 
     public void saveCertification(Certification cert) {
         certRepository.save(cert);
+    }
+
+    public List<Certification> findAllCertification() {
+        return certRepository.findAll();
     }
 
     public Certification findByCertificationName(String certificationName) {

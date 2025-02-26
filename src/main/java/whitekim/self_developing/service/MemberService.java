@@ -1,7 +1,9 @@
 package whitekim.self_developing.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.LoginMember;
+import whitekim.self_developing.jwt.JwtUtils;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.Problem;
@@ -29,11 +32,16 @@ public class MemberService {
     private final PaperRepository paperRepository;
     private final ProblemRepository<? extends Problem> problemRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserDetailsService userDetailsService;
+    private final JwtUtils jwtUtils;
 
-    public void registerMember(Member member) {
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
+    }
+
+    public void registerMember(Member member) throws ConstraintViolationException {
         // 등록가능한 사용자인지 판단
-        
+        memberRepository.save(member);
+
         // 비밀번호 암호화
         String rawPassword = member.getPassword();
         String encPassword = passwordEncoder.encode(rawPassword);
@@ -46,7 +54,7 @@ public class MemberService {
      * 로그인 기능 수행
      * @param member - 로그인 정보
      */
-    public UserDetails loginMember(LoginMember member) {
+    public void loginMember(LoginMember member, HttpServletResponse response) {
         Optional<Member> optionalMember = memberRepository.findByUsername(member.username());
 
         if(optionalMember.isEmpty())
@@ -54,11 +62,11 @@ public class MemberService {
 
         Member loginMember = optionalMember.get();
 
-        if(passwordEncoder.matches(member.password(), loginMember.getPassword())) {
-            return userDetailsService.loadUserByUsername(loginMember.getUsername());
+        if(!passwordEncoder.matches(member.password(), loginMember.getPassword())) {
+            throw new RuntimeException();
         }
 
-        return null;
+        jwtUtils.publishToken(loginMember.getUsername(), response);
     }
 
     /**
