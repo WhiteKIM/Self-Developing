@@ -15,9 +15,10 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @DiscriminatorValue("Choice")
 public class ChoiceProblem extends Problem {
+    @Builder.Default
     private ProblemType type = ProblemType.CHOICE;
     @Builder.Default
     private List<String> suggest = new ArrayList<>();

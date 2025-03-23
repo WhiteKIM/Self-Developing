@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @DiscriminatorColumn(name = "DTYPE")
 @Inheritance(strategy = InheritanceType.JOINED)
-@SuperBuilder
 public abstract class Problem extends BaseEntity {
     private String title;
     private String round;

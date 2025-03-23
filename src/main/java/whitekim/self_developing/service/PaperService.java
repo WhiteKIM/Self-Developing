@@ -18,7 +18,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PaperService {
     private final PaperRepository paperRepository;
-    private final ProblemService<Problem> problemService;
+    private final EssayProblemService essayProblemService;
+    private final ChoiceProblemService choiceProblemService;
     private final CertService certService;
 
 
@@ -53,7 +54,7 @@ public class PaperService {
         Certification cert = certService.findByCertificationName(searchPaper.getCertificationName());
         PaperType type = PaperType.valueOf(searchPaper.getType());
 
-        return paperRepository.findByCertificationAndPaperType(cert, type);
+        return paperRepository.findByCertificationAndType(cert, type);
     }
 
 

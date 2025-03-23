@@ -13,7 +13,6 @@ import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 

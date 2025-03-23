@@ -22,6 +22,10 @@ public class Paper extends BaseEntity {
     @JoinColumn(name = "certification_id")
     private Certification certification;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     @OneToMany(mappedBy = "problem")
     private List<Problem> problemList = new ArrayList<>();
 

@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import whitekim.self_developing.exception.InValidationTokenException;
 
@@ -25,7 +25,7 @@ public class JwtUtils {
     private final Long accessExpirationTime; // 엑세스토큰 만료시간
     private final Map<String, RefreshToken> tokenStore = new ConcurrentHashMap<>();   // 토근 저장소
     
-    public JwtUtils(String key, Long refreshExpirationTime, Long accessExpirationTime) {
+    public JwtUtils(@Value("${secret.key}") String key, @Value("${token.refresh-token.expiration}") Long refreshExpirationTime, @Value("${token.access-token.expiration}") Long accessExpirationTime) {
         this.refreshExpirationTime = refreshExpirationTime;
         this.accessExpirationTime = accessExpirationTime;
         this.key = key;

@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface PaperRepository extends JpaRepository<Paper, Long> {
-    List<Paper> findByCertificationAndPaperType(Certification certification, PaperType paperType);
+    List<Paper> findByCertificationAndType(Certification certification, PaperType type);
 }
