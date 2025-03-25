@@ -51,11 +51,29 @@ public class PaperService {
      * @return 검색된 문제 내역
      */
     public List<Paper> searchPaper(SearchPaper searchPaper) {
+        if(!searchPaper.isValidation()) {
+            return paperRepository.findAll();
+        }
+
         Certification cert = certService.findByCertificationName(searchPaper.getCertificationName());
         PaperType type = PaperType.valueOf(searchPaper.getType());
+
+        // 각각의 키워드로 데이터를 추출하고, 해당 데이터들의 공통부분을 추출
 
         return paperRepository.findByCertificationAndType(cert, type);
     }
 
+    public Paper getPaperDetail(Long id) {
+        Optional<Paper> optionalPaper = paperRepository.findById(id);
 
+        if(optionalPaper.isEmpty())
+            throw new RuntimeException("Not Exist Data");
+
+        return optionalPaper.get();
+    }
+
+
+    public List<Paper> searchPaperByCategory(String keyword) {
+        paperRepository.findAllByCategory();
+    }
 }

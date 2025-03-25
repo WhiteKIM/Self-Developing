@@ -15,15 +15,22 @@ import java.util.List;
 public class PaperController {
     private final PaperService paperService;
 
-    @GetMapping("/list")
-    public ResponseEntity<List<Paper>> getPaperByCertification(@RequestBody SearchPaper searchPaper) {
-        List<Paper> paperList = paperService.searchPaper(searchPaper);
+    @GetMapping("/v1/list")
+    public ResponseEntity<List<Paper>> getPaperByCertification(@RequestParam(required = false) String certName, @RequestParam(required = false) String category, @RequestParam(required = false) String type) {
+        List<Paper> paperList = paperService.searchPaper(new SearchPaper(certName, category, type));
 
         return ResponseEntity.ok(paperList);
     }
 
-    @PostMapping("/write")
-    public ResponseEntity<String> writePaper(Paper paper) {
+    @GetMapping("/v1/detail")
+    public ResponseEntity<Paper> getDetailPaper(@RequestParam Long id) {
+        Paper paper = paperService.getPaperDetail(id);
+
+        return ResponseEntity.ok(paper);
+    }
+
+    @PostMapping("/v1/register")
+    public ResponseEntity<String> registerPaper(Paper paper) {
         paperService.registerPaper(paper);
 
         return ResponseEntity.ok("Success");
