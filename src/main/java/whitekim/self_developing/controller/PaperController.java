@@ -16,8 +16,8 @@ public class PaperController {
     private final PaperService paperService;
 
     @GetMapping("/v1/list")
-    public ResponseEntity<List<Paper>> getPaperByCertification(@RequestParam(required = false) String certName, @RequestParam(required = false) String category, @RequestParam(required = false) String type) {
-        List<Paper> paperList = paperService.searchPaper(new SearchPaper(certName, category, type));
+    public ResponseEntity<List<Paper>> getPaperByCertification(@RequestParam(required = true) Long pageId) {
+        List<Paper> paperList = paperService.searchPaper(pageId);
 
         return ResponseEntity.ok(paperList);
     }

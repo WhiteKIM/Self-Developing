@@ -4,12 +4,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.request.SearchPaper;
-import whitekim.self_developing.model.Certification;
-import whitekim.self_developing.model.Paper;
-import whitekim.self_developing.model.PaperType;
-import whitekim.self_developing.model.Problem;
+import whitekim.self_developing.model.*;
+import whitekim.self_developing.repository.CategoryRepository;
+import whitekim.self_developing.repository.PageRepository;
 import whitekim.self_developing.repository.PaperRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PaperService {
     private final PaperRepository paperRepository;
-    private final EssayProblemService essayProblemService;
-    private final ChoiceProblemService choiceProblemService;
-    private final CertService certService;
-
+    private final PageRepository pageRepository;
 
     /**
      * 시험지를 등록합니다.
@@ -47,20 +44,16 @@ public class PaperService {
 
     /**
      * 선택한 자격증에 대한 문제를 검색
-     * @param searchPaper - 검색조건
+     * @param pageId - 페이지 아이디
      * @return 검색된 문제 내역
      */
-    public List<Paper> searchPaper(SearchPaper searchPaper) {
-        if(!searchPaper.isValidation()) {
-            return paperRepository.findAll();
-        }
+    public List<Paper> searchPaper(Long pageId) {
+        Optional<Page> optionalPage = pageRepository.findById(pageId);
 
-        Certification cert = certService.findByCertificationName(searchPaper.getCertificationName());
-        PaperType type = PaperType.valueOf(searchPaper.getType());
+        if(optionalPage.isEmpty())
+            throw new RuntimeException("Wrong Access");
 
-        // 각각의 키워드로 데이터를 추출하고, 해당 데이터들의 공통부분을 추출
-
-        return paperRepository.findByCertificationAndType(cert, type);
+        return optionalPage.get().getPaperList();
     }
 
     public Paper getPaperDetail(Long id) {
@@ -70,10 +63,5 @@ public class PaperService {
             throw new RuntimeException("Not Exist Data");
 
         return optionalPaper.get();
-    }
-
-
-    public List<Paper> searchPaperByCategory(String keyword) {
-        paperRepository.findAllByCategory();
     }
 }

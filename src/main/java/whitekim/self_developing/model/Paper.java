@@ -17,13 +17,9 @@ public class Paper extends BaseEntity {
     private String title;   // 문제지 제목
     private PaperType type;
 
-    @OneToOne
-    @JoinColumn(name = "certification_id")
-    private Certification certification;
-
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "page_id")
+    private Page page;
 
     @OneToMany(mappedBy = "problem")
     private List<Problem> problemList = new ArrayList<>();
