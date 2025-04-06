@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.repository.CertRepository;
+import whitekim.self_developing.repository.ChoiceProblemRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
-    public ChoiceProblemService(ProblemRepository<ChoiceProblem> problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
+    public ChoiceProblemService(ChoiceProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
         super(problemRepository, certRepository, paperRepository);
     }
 

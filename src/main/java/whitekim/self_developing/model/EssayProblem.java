@@ -6,17 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import whitekim.self_developing.dto.request.ProblemForm;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @DiscriminatorValue("Essay")
 public class EssayProblem extends Problem{
-    @Builder.Default
-    private ProblemType type = ProblemType.ESSAY;
-    private String answer;  //정답
+    private ProblemType type;   // 문제 타입
+    private String answer;      //정답
+
+    public EssayProblem(ProblemForm form) {
+        super(form);
+        this.type = ProblemType.ESSAY;
+        this.answer = form.getAnswer().get(0);
+    }
 
     @Override
     public void update(Problem updateProblem) {

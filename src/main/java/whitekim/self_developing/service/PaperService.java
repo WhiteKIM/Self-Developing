@@ -3,14 +3,17 @@ package whitekim.self_developing.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import whitekim.self_developing.dto.request.SearchPaper;
+import whitekim.self_developing.dto.request.PaperForm;
+import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.*;
-import whitekim.self_developing.repository.CategoryRepository;
-import whitekim.self_developing.repository.PageRepository;
-import whitekim.self_developing.repository.PaperRepository;
+import whitekim.self_developing.repository.*;
+import whitekim.self_developing.service.factory.ProblemFactory;
+import whitekim.self_developing.service.factory.ProblemRepoFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -19,41 +22,57 @@ import java.util.Optional;
 public class PaperService {
     private final PaperRepository paperRepository;
     private final PageRepository pageRepository;
+    private final ImageRepository imageRepository;
+    private final ProblemFactory problemFactory;
+    private final ProblemRepoFactory problemRepoFactory;
+    private final ChoiceProblemRepository choiceProblemRepository;
+    private final EssayProblemRepository essayProblemRepository;
 
     /**
      * 시험지를 등록합니다.
      * @param paper
      */
-    public void registerPaper(Paper paper) {
-        paperRepository.save(paper);
+    public void registerPaper(PaperForm paper) {
+        paperRepository.save(new Paper(paper));
     }
 
-    /**
-     * 시험지에 문제를 추가
-     */
-    public void addProblemIntoPaper(Long id, Problem problem) {
-        Optional<Paper> optPaper = paperRepository.findById(id);
+    public List<Paper> getPaperList(Long pageId) {
+        Optional<Page> optPage = pageRepository.findById(pageId);
 
-        if(optPaper.isEmpty())
-            throw new RuntimeException();
+        if(optPage.isEmpty()) {
+            throw new NotFoundDataException("존재하지 않는 항목입니다.");
+        }
+
+        return optPage.get().getPaperList();
+    }
+
+    public void addProblem(Long paperId, List<ProblemForm> problemList) {
+        Optional<Paper> optPaper = paperRepository.findById(paperId);
+
+        if(optPaper.isEmpty()) {
+            throw new NotFoundDataException("존재하지 않는 항목입니다.");
+        }
 
         Paper paper = optPaper.get();
-        paper.addProblem(problem);
-    }
 
+        for(ProblemForm form : problemList) {
+            String type = form.getProblemType();
+            // 적절한 타입으로 생성해서 넣어주어야 함
+            Problem problem = problemFactory.createProblem(form);
 
-    /**
-     * 선택한 자격증에 대한 문제를 검색
-     * @param pageId - 페이지 아이디
-     * @return 검색된 문제 내역
-     */
-    public List<Paper> searchPaper(Long pageId) {
-        Optional<Page> optionalPage = pageRepository.findById(pageId);
-
-        if(optionalPage.isEmpty())
-            throw new RuntimeException("Wrong Access");
-
-        return optionalPage.get().getPaperList();
+            switch (type) {
+                case "CHOICE":
+                    ChoiceProblem choiceProblem = choiceProblemRepository.save((ChoiceProblem) problem);
+                    paper.addProblem(choiceProblem);
+                    break;
+                case "ESSAY":
+                    EssayProblem essayProblem = essayProblemRepository.save((EssayProblem) problem);
+                    paper.addProblem(essayProblem);
+                    break;
+                default:
+                    throw new IllegalArgumentException("존재하지 않거나 잘못된 타입이 입력되었습니다.");
+            }
+        }
     }
 
     public Paper getPaperDetail(Long id) {
@@ -64,4 +83,7 @@ public class PaperService {
 
         return optionalPaper.get();
     }
+
+
+
 }

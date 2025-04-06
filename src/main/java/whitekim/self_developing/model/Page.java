@@ -30,4 +30,8 @@ public class Page extends BaseEntity {
     @OneToMany(mappedBy = "page")
     @Builder.Default
     private List<Paper> paperList = new ArrayList<>();
+
+    public void addPaper(Paper paper) {
+        paperList.add(paper);
+    }
 }

@@ -7,23 +7,24 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import whitekim.self_developing.dto.request.ProblemForm;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @DiscriminatorValue("Choice")
 public class ChoiceProblem extends Problem {
-    @Builder.Default
     private ProblemType type = ProblemType.CHOICE;
-    @Builder.Default
     private List<String> suggest = new ArrayList<>();
-    @Builder.Default
     private List<String> answer = new ArrayList<>();//중복답 처리가 필요한 경우도 있을 수 있음
+
+    public ChoiceProblem(ProblemForm form) {
+        super(form);
+        this.type = ProblemType.CHOICE;
+        this.suggest = form.getSuggest();
+    }
 
     @Override
     public void update(Problem updateProblem) {

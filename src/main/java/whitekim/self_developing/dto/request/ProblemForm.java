@@ -1,0 +1,31 @@
+package whitekim.self_developing.dto.request;
+
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+import whitekim.self_developing.model.ChoiceProblem;
+import whitekim.self_developing.model.Problem;
+import whitekim.self_developing.model.ProblemType;
+
+import java.util.List;
+
+@Data
+public class ProblemForm {
+    private String problemType;     // 문제 타입
+    private String title;           // 제목
+    private String round;           // 회차
+    private String subject;         // 과목정보
+    private String problem;         // 문제내용
+    private List<String> suggest;   // 보기
+    private String categoryName;    // 카테고리명
+    private MultipartFile image;    // 첨부이미지
+    private List<String> answer;    // 정답
+    private String comment;         // 해설
+
+    public Problem toChoice() {
+        return new ChoiceProblem(this);
+    }
+
+    public Problem toEssay() {
+        return new ChoiceProblem(this);
+    }
+}
