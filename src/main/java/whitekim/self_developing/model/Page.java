@@ -33,5 +33,6 @@ public class Page extends BaseEntity {
 
     public void addPaper(Paper paper) {
         paperList.add(paper);
+        paper.registerPage(this);
     }
 }

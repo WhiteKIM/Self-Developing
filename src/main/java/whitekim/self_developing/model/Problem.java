@@ -1,5 +1,6 @@
 package whitekim.self_developing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -26,6 +27,7 @@ public abstract class Problem extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "paper_id")
+    @JsonIgnore
     private Paper paper;
 
     private String comment; //해설

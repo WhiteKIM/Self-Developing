@@ -17,7 +17,6 @@ public class ProblemForm {
     private String problem;         // 문제내용
     private List<String> suggest;   // 보기
     private String categoryName;    // 카테고리명
-    private MultipartFile image;    // 첨부이미지
     private List<String> answer;    // 정답
     private String comment;         // 해설
 

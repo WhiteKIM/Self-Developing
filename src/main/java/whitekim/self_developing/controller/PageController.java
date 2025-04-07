@@ -52,8 +52,8 @@ public class PageController {
     }
 
     @PostMapping("/v1/paper/register")
-    public ResponseEntity<String> registerPaper(@RequestBody PaperForm paperForm) {
-        paperService.registerPaper(paperForm);
+    public ResponseEntity<String> registerPaper(@RequestParam(name = "pageId") Long pageId, @RequestBody PaperForm paperForm) {
+        paperService.registerPaper(pageId, paperForm);
 
         return ResponseEntity.ok("문제집을 등록하였습니다.");
     }

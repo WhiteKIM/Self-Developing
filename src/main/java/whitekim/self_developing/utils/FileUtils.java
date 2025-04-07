@@ -2,6 +2,8 @@ package whitekim.self_developing.utils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,6 +66,15 @@ public class FileUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Resource getUploadFile(String filePath) {
+        File file = new File(filePath);
+
+        if(!file.isFile())
+            return null;
+
+        return new FileSystemResource(file);
     }
 
     /**

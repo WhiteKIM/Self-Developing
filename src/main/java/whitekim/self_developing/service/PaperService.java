@@ -11,9 +11,7 @@ import whitekim.self_developing.repository.*;
 import whitekim.self_developing.service.factory.ProblemFactory;
 import whitekim.self_developing.service.factory.ProblemRepoFactory;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,18 +20,18 @@ import java.util.Optional;
 public class PaperService {
     private final PaperRepository paperRepository;
     private final PageRepository pageRepository;
-    private final ImageRepository imageRepository;
     private final ProblemFactory problemFactory;
     private final ProblemRepoFactory problemRepoFactory;
-    private final ChoiceProblemRepository choiceProblemRepository;
-    private final EssayProblemRepository essayProblemRepository;
 
     /**
      * 시험지를 등록합니다.
      * @param paper
      */
-    public void registerPaper(PaperForm paper) {
-        paperRepository.save(new Paper(paper));
+    public void registerPaper(Long pageId, PaperForm paper) {
+        Page page = pageRepository.findById(pageId).orElseThrow();
+        Paper savePage = paperRepository.save(new Paper(paper));
+
+        page.addPaper(savePage);
     }
 
     public List<Paper> getPaperList(Long pageId) {
@@ -59,14 +57,17 @@ public class PaperService {
             String type = form.getProblemType();
             // 적절한 타입으로 생성해서 넣어주어야 함
             Problem problem = problemFactory.createProblem(form);
+            ProblemRepository<? extends Problem> problemRepository = problemRepoFactory.createRepository(form.getProblemType());
 
             switch (type) {
                 case "CHOICE":
-                    ChoiceProblem choiceProblem = choiceProblemRepository.save((ChoiceProblem) problem);
+                    ChoiceProblemRepository choiceRepo = (ChoiceProblemRepository) problemRepository;
+                    ChoiceProblem choiceProblem = choiceRepo.save((ChoiceProblem) problem);
                     paper.addProblem(choiceProblem);
                     break;
                 case "ESSAY":
-                    EssayProblem essayProblem = essayProblemRepository.save((EssayProblem) problem);
+                    EssayProblemRepository essayRepo = (EssayProblemRepository) problemRepository;
+                    EssayProblem essayProblem = essayRepo.save((EssayProblem) problem);
                     paper.addProblem(essayProblem);
                     break;
                 default:
@@ -83,7 +84,4 @@ public class PaperService {
 
         return optionalPaper.get();
     }
-
-
-
 }

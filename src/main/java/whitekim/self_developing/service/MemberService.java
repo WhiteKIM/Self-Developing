@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.LoginMember;
+import whitekim.self_developing.dto.request.SubmitProblem;
 import whitekim.self_developing.jwt.JwtUtils;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
@@ -18,6 +19,7 @@ import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.repository.MemberRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
+import whitekim.self_developing.service.factory.ProblemRepoFactory;
 import whitekim.self_developing.utils.AuthUtils;
 
 import java.util.List;
@@ -30,7 +32,7 @@ import java.util.UUID;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PaperRepository paperRepository;
-    private final ProblemRepository<? extends Problem> problemRepository;
+    private final ProblemRepoFactory repoFactory;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
@@ -122,13 +124,16 @@ public class MemberService {
      * 틀린 오답문제 내역을 추가
      * @param wrongProblemList
      */
-    public void addProblemIntoWrongList(List<Long> wrongProblemList) {
+    public void addProblemIntoWrongList(List<SubmitProblem> wrongProblemList) {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
         Long loginMemberId = userDetails.getId();
 
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
-        List<? extends Problem> problems = problemRepository.findAllById(wrongProblemList);
 
-        loginMember.addWrongList(problems);
+        for(SubmitProblem submitProblem : wrongProblemList) {
+            ProblemRepository<? extends Problem> repository = repoFactory.createRepository(submitProblem.getType());
+            Problem problem = repository.findById(submitProblem.getId()).orElseThrow();
+            loginMember.addWrongProblem(problem);
+        }
     }
 }

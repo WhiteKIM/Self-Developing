@@ -1,8 +1,11 @@
 package whitekim.self_developing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import whitekim.self_developing.dto.request.PaperForm;
 
 import java.util.ArrayList;
@@ -13,6 +16,8 @@ import java.util.List;
  *
  */
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class Paper extends BaseEntity {
     private String title;   // 문제지 제목
@@ -20,6 +25,7 @@ public class Paper extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "page_id")
+    @JsonIgnore
     private Page page;
 
     @OneToMany(mappedBy = "problem")
@@ -38,6 +44,5 @@ public class Paper extends BaseEntity {
 
     public void registerPage(Page page) {
         this.page = page;
-        page.addPaper(this);
     }
 }

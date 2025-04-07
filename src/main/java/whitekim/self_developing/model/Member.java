@@ -70,4 +70,8 @@ public class Member extends BaseEntity {
     public void resetPassword(String password) {
         this.password = password;
     }
+
+    public void addWrongProblem(Problem problem) {
+        wrongList.add(problem);
+    }
 }

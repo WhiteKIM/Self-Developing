@@ -3,6 +3,7 @@ package whitekim.self_developing.service;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.model.Image;
@@ -30,6 +31,17 @@ public class ImageService {
         return image;
     }
 
+    public Resource getImage(String filename) {
+        Optional<Image> optFile = imageRepository.findByFilename(filename);
+
+        if(optFile.isEmpty())
+            return null;
+
+        Image image = optFile.get();
+
+        return fileUtils.getUploadFile(image.getFilepath());
+    }
+
     public void saveImage(MultipartFile uploadFile) {
         String uploadFileName = fileUtils.uploadFile(uploadFile);
         int index = uploadFileName.lastIndexOf("/");
@@ -51,4 +63,6 @@ public class ImageService {
         fileUtils.deleteUploadFile(optionalImage.get().getFilename());
         imageRepository.deleteById(id);
     }
+
+
 }

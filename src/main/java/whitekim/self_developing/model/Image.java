@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Image extends BaseEntity{
     private String filepath;            // 저장경로
+    @Column(unique = true)
     private String filename;            // 파일명
     private String originalFilename;    // 원본파일명
 }

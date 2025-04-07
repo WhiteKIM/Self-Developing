@@ -2,6 +2,7 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,13 +15,11 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
-public class Certification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                    // PK
+public class Certification extends BaseEntity {     // PK
     @Column(unique = true)
     private String certName;            // 자격증명
-    private LocalDateTime examTime;     // 시험시간
+    private Long examTime;     // 시험시간
     private Long subjectCount;          // 과목 개수
 }
