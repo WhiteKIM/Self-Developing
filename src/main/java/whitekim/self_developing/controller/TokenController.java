@@ -3,8 +3,11 @@ package whitekim.self_developing.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import whitekim.self_developing.jwt.JwtUtils;
 
@@ -14,22 +17,20 @@ public class TokenController {
     private final JwtUtils jwtUtils;
 
     /**
-     * 리프레시 토큰을 이용해서 엑세스 토큰을 재발행
-     * @param response
-     * @param request
+     * 리프레스 토큰으로 엑세스토큰 재발행
+     * @param refreshToken
      * @return
      */
-    @GetMapping("/api/v1/reissue/accessToken")
-    public ResponseEntity<?> reIssueAccessToken(HttpServletResponse response, HttpServletRequest request) {
-        String token = response.getHeader("Refresh-Token");
-        String username = jwtUtils.verifyRefreshToken(token);
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<String> republishAccessToken(@RequestBody String refreshToken) {
+        String accessToken = "";
 
-        if(username.isBlank()) {
-            return ResponseEntity.status(401).body("로그인 정보가 만료되었습니다.");
+        try {
+            accessToken = jwtUtils.republishToken(refreshToken);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        jwtUtils.publishToken(username, response);
-
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(accessToken);
     }
 }

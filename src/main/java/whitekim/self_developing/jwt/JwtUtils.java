@@ -1,6 +1,7 @@
 package whitekim.self_developing.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -51,6 +52,23 @@ public class JwtUtils {
         AccessToken accessToken = publishAccessToken(username);
         response.setHeader("Refresh-Token", refreshToken.getToken());
         response.setHeader("Access-Token", accessToken.getToken());
+    }
+
+    /**
+     * 리프레시 토큰을 이용해서 엑세스 토큰 재발행 수행
+     * 리프레시 토큰이 만료되었다면 오류 전달
+     * @param refreshToken - 리프레시토큰
+     */
+    public String republishToken(String refreshToken) {
+        // 이전에 발행된 리프레시 토큰이 존재하고, 해당 토큰이 유효한 경우
+        String username = verifyRefreshToken(refreshToken);
+        if(username == null) {
+            throw new RuntimeException("만료된 인증정보입니다.");
+        }
+
+        // 리프레시토큰으로 엑세스 토큰 재발행 수행
+        AccessToken accessToken = publishAccessToken(username);
+        return accessToken.getToken();
     }
 
     /**
