@@ -1,15 +1,15 @@
 package whitekim.self_developing.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
-import whitekim.self_developing.exception.InValidationTokenException;
+import whitekim.self_developing.exception.PermissionDeniedException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -73,37 +73,6 @@ public class JwtUtils {
         return accessToken.getToken();
     }
 
-    /**
-     * 토큰 검증 로직
-     * 엑세스 토큰에 대해서 검증하고, 해당 토큰이 만료되거나 유효하지 않다면
-     * 리프레쉬 토큰이 있다면 해당 토큰을 이용해서
-     * @param response
-     */
-    public boolean verifyToken(HttpServletResponse response) {
-        String accessToken = response.getHeader("Access-Token");
-        String refreshToken = response.getHeader("Refresh-Token");
-
-        // 엑세스 토큰으로만 요청한 경우
-        if(refreshToken.isBlank()) {
-            if(!verifyAccessToken(accessToken).isBlank()) {
-                throw new InValidationTokenException("Invalid Access Token");
-            }
-
-        } else {
-            if(!verifyRefreshToken(refreshToken).isBlank()) {
-                // 새롭게 토큰을 모두 발행해야 한다.
-                throw new InValidationTokenException("Invalid Refresh Token");
-            }
-
-            Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(refreshToken);
-            String username = claimsJws.getPayload().getSubject();
-            AccessToken token = publishAccessToken(username);
-
-            response.setHeader("Access-Token", token.getToken());
-
-        }
-        return true;
-    }
 
     /**
      * 리프레시 토근 발행
@@ -173,9 +142,16 @@ public class JwtUtils {
 
     /**
      * 특정 사용자 토큰 제거
-     * @param username : 토큰을 제거할 사용자명
+     * 본인이 아닌 제3자의 요청만으로는 제거하지 않는다.
+     * @param username     : 토큰을 제거할 사용자명
+     * @param refreshToken accessToken : 검증대상 토큰
      */
-    private void removeMemberToken(String username) {
-        tokenStore.remove(username);
+    public void removeMemberToken(String username, String refreshToken, String accessToken) {
+        if(verifyRefreshToken(refreshToken).equals(username) || verifyAccessToken(accessToken).equals(username)) {
+            tokenStore.remove(username);
+            return;
+        }
+
+        throw new PermissionDeniedException("권한이 없는 접근입니다.");
     }
 }
