@@ -2,15 +2,14 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import whitekim.self_developing.dto.request.ProblemForm;
 
 @Entity
 @Getter
 @DiscriminatorValue("Essay")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class EssayProblem extends Problem{
     private ProblemType type;   // 문제 타입
     private String answer;      //정답

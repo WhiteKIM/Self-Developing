@@ -28,7 +28,7 @@ public class Paper extends BaseEntity {
     @JsonIgnore
     private Page page;
 
-    @OneToMany(mappedBy = "problem")
+    @OneToMany(mappedBy = "paper")
     private List<Problem> problemList = new ArrayList<>();
 
     public Paper(PaperForm paperForm) {

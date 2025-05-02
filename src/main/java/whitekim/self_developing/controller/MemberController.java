@@ -2,6 +2,7 @@ package whitekim.self_developing.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
@@ -42,6 +44,8 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginMember(@RequestBody LoginMember loginMember, HttpServletResponse response) {
+        log.info("[Login] : {}", loginMember);
+
         try {
             memberService.loginMember(loginMember, response);
         } catch (RuntimeException e) {

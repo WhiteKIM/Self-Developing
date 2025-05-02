@@ -41,6 +41,7 @@ public class JwtUtils {
      * 없다면 리프레시 토큰과 엑세스 토큰을 발행
      * @param username - 로그인한 사용자
      */
+    /* @BUG : 해당 코드에서 username으로 Map이 세팅되어 중복로그인이 차단되는 문제가 발생 */
     public void publishToken(String username, HttpServletResponse response) {
         // 이전에 발행된 리프레시 토큰이 존재하고, 해당 토큰이 유효한 경우
         if(tokenStore.containsKey(username) && !verifyRefreshToken(tokenStore.get(username).getToken()).isBlank()) {

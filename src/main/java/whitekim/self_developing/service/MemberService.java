@@ -65,7 +65,7 @@ public class MemberService {
         Member loginMember = optionalMember.get();
 
         if(!passwordEncoder.matches(member.password(), loginMember.getPassword())) {
-            throw new RuntimeException();
+            throw new RuntimeException("Password is Not Matched");
         }
 
         jwtUtils.publishToken(loginMember.getUsername(), response);

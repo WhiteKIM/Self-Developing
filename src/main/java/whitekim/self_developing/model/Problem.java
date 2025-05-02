@@ -10,6 +10,8 @@ import whitekim.self_developing.dto.request.ProblemForm;
 @Getter
 @DiscriminatorColumn(name = "DTYPE")
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public abstract class Problem extends BaseEntity {
     private String title;   // 제목
     private String round;   // 회차정보

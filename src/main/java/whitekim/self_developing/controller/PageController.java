@@ -32,7 +32,7 @@ public class PageController {
     }
 
     @GetMapping("/v1/detail")
-    public ResponseEntity<DetailPageForm> getPageDetail(@RequestParam Long id) {
+    public ResponseEntity<DetailPageForm> getPageDetail(@RequestParam(name = "id") Long id) {
         DetailPageForm page = null;
 
         try {

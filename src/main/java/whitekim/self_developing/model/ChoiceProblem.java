@@ -2,10 +2,7 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import whitekim.self_developing.dto.request.ProblemForm;
 
@@ -15,6 +12,8 @@ import java.util.List;
 @Entity
 @Getter
 @DiscriminatorValue("Choice")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ChoiceProblem extends Problem {
     private ProblemType type = ProblemType.CHOICE;
     private List<String> suggest = new ArrayList<>();
