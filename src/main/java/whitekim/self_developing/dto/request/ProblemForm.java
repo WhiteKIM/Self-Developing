@@ -1,10 +1,8 @@
 package whitekim.self_developing.dto.request;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.Problem;
-import whitekim.self_developing.model.ProblemType;
 
 import java.util.List;
 
