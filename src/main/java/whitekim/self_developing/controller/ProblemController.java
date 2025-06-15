@@ -2,10 +2,7 @@ package whitekim.self_developing.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.service.ProblemService;
 
@@ -25,5 +22,17 @@ public class ProblemController {
         List<? extends Problem> problemList = targetService.findAllByPaper(paperId);
 
         return ResponseEntity.ok(problemList);
+    }
+
+    /**
+     * 단건 문제 답안 제출
+     * @param problemId - 해당 문제
+     * @param answer - 문제 답안
+     * @return - 채점 결과
+     */
+    @PostMapping("/v1/problem/markProblem")
+    public ResponseEntity<?> markingProblem(@RequestParam Long problemId, @RequestBody String answer) {
+        
+        return null;
     }
 }

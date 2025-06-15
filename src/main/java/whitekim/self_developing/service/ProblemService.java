@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.exception.NotExistProblemException;
 import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.Paper;
@@ -134,5 +136,12 @@ public abstract class ProblemService<T extends Problem> {
         }
     }
 
+    /**
+     * 제출 답안 채점
+     */
+    public MarkingProblem markingProblem(Long problemId, String answer) {
+        Problem problem = problemRepository.findById(problemId).orElseThrow(NotExistProblemException::new);
 
+        return problem.mark(answer);
+    }
 }

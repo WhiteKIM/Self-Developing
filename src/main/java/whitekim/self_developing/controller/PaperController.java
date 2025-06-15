@@ -37,4 +37,16 @@ public class PaperController {
 
         return ResponseEntity.ok("문제를 등록하였습니다.");
     }
+
+    /**
+     * 문제지 답안 제출
+     * @param paperId - 해당 문제지 정보
+     * @param answerList - 문제지 답안 리스트
+     * @return 채점 결과
+     */
+    @PostMapping("/v1/paper/markPaper")
+    public ResponseEntity<?> markingPaper(@RequestParam("paperId") Long paperId, @RequestBody List<String> answerList) {
+        
+        return null;
+    }
 }

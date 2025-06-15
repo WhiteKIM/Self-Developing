@@ -2,6 +2,7 @@ package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.ChoiceProblemRepository;
@@ -52,4 +53,11 @@ public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
     public void deleteProblemList(List<Long> idList) {
         super.deleteProblemList(idList);
     }
+
+    @Override
+    public MarkingProblem markingProblem(Long problemId, String answer) {
+        return super.markingProblem(problemId, answer);
+    }
+
+
 }

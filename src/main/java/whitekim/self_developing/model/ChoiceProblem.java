@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.dto.response.MarkingProblem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,5 +34,29 @@ public class ChoiceProblem extends Problem {
         super.update(updateProblem);
         this.suggest = choiceProblem.getSuggest();
         this.answer = choiceProblem.getAnswer();
+    }
+
+    /**
+     * 문제 채점 기능
+     * @param submitAnswer - 제출 답안
+     * @return
+     */
+    @Override
+    public MarkingProblem mark(String submitAnswer) {
+        boolean check = false;
+        String correctAnswer = String.join(",", answer);
+
+        for(String right : answer) {
+            if(right.equals(submitAnswer)) {
+                check = true;
+                break;
+            }
+        }
+
+        if(check) {
+            return new MarkingProblem(super.getId(), true, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
+        } else {
+            return new MarkingProblem(super.getId(), false, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
+        }
     }
 }

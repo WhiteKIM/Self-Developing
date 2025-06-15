@@ -4,6 +4,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;
 import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.dto.response.MarkingProblem;
 
 @Entity
 @Getter
@@ -27,5 +28,18 @@ public class EssayProblem extends Problem{
 
         super.update(updateProblem);
         this.answer = essayProblem.getAnswer();
+    }
+
+    /**
+     * @param submitAnswer - 제출 답안
+     * @return
+     */
+    @Override
+    public MarkingProblem mark(String submitAnswer) {
+        if(answer.equals(submitAnswer)) {
+            return new MarkingProblem(super.getId(), true, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+        } else {
+            return new MarkingProblem(super.getId(), false, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+        }
     }
 }

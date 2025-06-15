@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.dto.response.MarkingProblem;
 
 @Entity
 @Getter
@@ -62,4 +63,12 @@ public abstract class Problem extends BaseEntity {
     public void appendedPaper(Paper paper) {
         this.paper = paper;
     }
+
+    /**
+     * 문제 채점 기능
+     * 제출 답안과 등록된 정답을 비교해서 결과를 반환
+     * @param submitAnswer - 제출 답안
+     * @return
+     */
+    public abstract MarkingProblem mark(String submitAnswer);
 }
