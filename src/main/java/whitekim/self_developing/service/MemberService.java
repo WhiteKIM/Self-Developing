@@ -4,8 +4,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,7 @@ import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.repository.MemberRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
-import whitekim.self_developing.service.factory.ProblemRepoFactory;
+import whitekim.self_developing.service.factory.problem.ProblemRepoFactory;
 import whitekim.self_developing.utils.AuthUtils;
 
 import java.util.List;

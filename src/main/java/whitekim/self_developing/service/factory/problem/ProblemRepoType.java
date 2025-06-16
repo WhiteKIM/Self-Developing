@@ -1,4 +1,4 @@
-package whitekim.self_developing.service.factory;
+package whitekim.self_developing.service.factory.problem;
 
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.EssayProblem;

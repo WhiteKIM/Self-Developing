@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.request.SearchPaper;
+import whitekim.self_developing.dto.response.MarkingPaper;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.service.PaperService;
 
@@ -31,7 +32,7 @@ public class PaperController {
         return ResponseEntity.ok(paper);
     }
 
-    @PostMapping("/v1/paper/registerProblem")
+    @PostMapping("/v1/registerProblem")
     public ResponseEntity<String> registerProblemList(@RequestParam("paperId") Long paperId, @RequestPart(value = "uploadImage", required = false) List<MultipartFile> uploadImage, @RequestPart("problemList") List<ProblemForm> problemList) {
         paperService.addProblem(paperId, problemList);
 
@@ -44,9 +45,10 @@ public class PaperController {
      * @param answerList - 문제지 답안 리스트
      * @return 채점 결과
      */
-    @PostMapping("/v1/paper/markPaper")
+    @PostMapping("/v1/markPaper")
     public ResponseEntity<?> markingPaper(@RequestParam("paperId") Long paperId, @RequestBody List<String> answerList) {
-        
-        return null;
+        MarkingPaper markingPaper = paperService.markingPaper(paperId, answerList);
+
+        return ResponseEntity.ok(markingPaper);
     }
 }

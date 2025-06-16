@@ -5,12 +5,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.dto.response.MarkingPaper;
+import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.exception.NotExistPaperException;
 import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.*;
 import whitekim.self_developing.repository.*;
-import whitekim.self_developing.service.factory.ProblemFactory;
-import whitekim.self_developing.service.factory.ProblemRepoFactory;
+import whitekim.self_developing.service.factory.problem.ProblemFactory;
+import whitekim.self_developing.service.factory.problem.ProblemRepoFactory;
+import whitekim.self_developing.service.factory.problem.ProblemServiceFactory;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +28,7 @@ public class PaperService {
     private final PageRepository pageRepository;
     private final ProblemFactory problemFactory;
     private final ProblemRepoFactory problemRepoFactory;
+    private final ProblemServiceFactory problemServiceFactory;
 
     /**
      * 시험지를 등록합니다.
@@ -83,5 +90,24 @@ public class PaperService {
             throw new RuntimeException("Not Exist Data");
 
         return optionalPaper.get();
+    }
+
+    /**
+     * 문제지 채점 수행
+     */
+    public MarkingPaper markingPaper(Long paperId, List<String> answerList) {
+        Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
+        List<Problem> problemList = paper.getProblemList();
+        List<MarkingProblem> markingProblemList = new ArrayList<>();
+
+        for(int i = 0; i < problemList.size(); i++) {
+            Problem problem = problemList.get(i);
+            ProblemService<? extends Problem> service = problemServiceFactory.createService(problem.getClass());
+            MarkingProblem markResult = service.markingProblem(problem.getId(), answerList.get(i));
+
+            markingProblemList.add(markResult);
+        }
+
+        return new MarkingPaper(paper.getTitle(), paper.getTitle(), 0, 0, 0, LocalDateTime.now(), markingProblemList);
     }
 }

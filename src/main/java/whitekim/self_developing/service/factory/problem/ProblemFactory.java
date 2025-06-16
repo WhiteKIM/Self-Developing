@@ -1,4 +1,4 @@
-package whitekim.self_developing.service.factory;
+package whitekim.self_developing.service.factory.problem;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;

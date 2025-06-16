@@ -30,9 +30,10 @@ public class ProblemController {
      * @param answer - 문제 답안
      * @return - 채점 결과
      */
-    @PostMapping("/v1/problem/markProblem")
+    @PostMapping("/v1/markProblem")
     public ResponseEntity<?> markingProblem(@RequestParam Long problemId, @RequestBody String answer) {
-        
+
+
         return null;
     }
 }
