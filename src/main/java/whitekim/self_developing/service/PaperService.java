@@ -100,14 +100,25 @@ public class PaperService {
         List<Problem> problemList = paper.getProblemList();
         List<MarkingProblem> markingProblemList = new ArrayList<>();
 
+        int rightCount = 0;
+        int wrongCount = 0;
+        int score = 0;
+
         for(int i = 0; i < problemList.size(); i++) {
             Problem problem = problemList.get(i);
             ProblemService<? extends Problem> service = problemServiceFactory.createService(problem.getClass());
             MarkingProblem markResult = service.markingProblem(problem.getId(), answerList.get(i));
 
+            if (markResult.isCorrect()) {
+                rightCount += 1;
+                score+= markResult.score();
+            } else {
+                wrongCount += 1;
+            }
+
             markingProblemList.add(markResult);
         }
 
-        return new MarkingPaper(paper.getTitle(), paper.getTitle(), 0, 0, 0, LocalDateTime.now(), markingProblemList);
+        return new MarkingPaper(paper.getTitle(), paper.getTitle(), score, rightCount, wrongCount, LocalDateTime.now(), markingProblemList);
     }
 }

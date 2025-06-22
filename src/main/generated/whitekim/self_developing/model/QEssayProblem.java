@@ -54,6 +54,9 @@ public class QEssayProblem extends EntityPathBase<EssayProblem> {
     public final StringPath round;
 
     //inherited
+    public final NumberPath<Integer> score;
+
+    //inherited
     public final StringPath subject;
 
     //inherited
@@ -89,6 +92,7 @@ public class QEssayProblem extends EntityPathBase<EssayProblem> {
         this.paper = _super.paper;
         this.problem = _super.problem;
         this.round = _super.round;
+        this.score = _super.score;
         this.subject = _super.subject;
         this.title = _super.title;
     }

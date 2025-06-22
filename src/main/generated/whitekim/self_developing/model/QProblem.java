@@ -45,6 +45,8 @@ public class QProblem extends EntityPathBase<Problem> {
 
     public final StringPath round = createString("round");
 
+    public final NumberPath<Integer> score = createNumber("score", Integer.class);
+
     public final StringPath subject = createString("subject");
 
     public final StringPath title = createString("title");

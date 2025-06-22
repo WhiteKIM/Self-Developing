@@ -35,12 +35,15 @@ public abstract class Problem extends BaseEntity {
 
     private String comment; //해설
 
+    private int score = 0;
+
     public Problem(ProblemForm form) {
         this.title = form.getTitle();
         this.round = form.getRound();
         this.subject = form.getSubject();
         this.problem = form.getProblem();
         this.comment = form.getComment();
+        this.score = form.getScore();
     }
 
     public void update(Problem updateProblem) {

@@ -18,7 +18,7 @@ public class EssayProblem extends Problem{
     public EssayProblem(ProblemForm form) {
         super(form);
         this.type = ProblemType.ESSAY;
-        this.answer = form.getAnswer().get(0);
+        this.answer = form.getAnswer().getFirst();
     }
 
     @Override
@@ -37,9 +37,9 @@ public class EssayProblem extends Problem{
     @Override
     public MarkingProblem mark(String submitAnswer) {
         if(answer.equals(submitAnswer)) {
-            return new MarkingProblem(super.getId(), true, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+            return new MarkingProblem(super.getId(), true, super.getScore(),  ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
         } else {
-            return new MarkingProblem(super.getId(), false, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+            return new MarkingProblem(super.getId(),  false, 0, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
         }
     }
 }

@@ -54,6 +54,9 @@ public class QChoiceProblem extends EntityPathBase<ChoiceProblem> {
     public final StringPath round;
 
     //inherited
+    public final NumberPath<Integer> score;
+
+    //inherited
     public final StringPath subject;
 
     public final ListPath<String, StringPath> suggest = this.<String, StringPath>createList("suggest", String.class, StringPath.class, PathInits.DIRECT2);
@@ -91,6 +94,7 @@ public class QChoiceProblem extends EntityPathBase<ChoiceProblem> {
         this.paper = _super.paper;
         this.problem = _super.problem;
         this.round = _super.round;
+        this.score = _super.score;
         this.subject = _super.subject;
         this.title = _super.title;
     }

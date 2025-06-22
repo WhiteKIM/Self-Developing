@@ -17,6 +17,7 @@ public class ProblemForm {
     private String categoryName;    // 카테고리명
     private List<String> answer;    // 정답
     private String comment;         // 해설
+    private int score;              // 점수
 
     public Problem toChoice() {
         return new ChoiceProblem(this);

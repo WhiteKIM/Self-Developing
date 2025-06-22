@@ -24,6 +24,7 @@ public class ChoiceProblem extends Problem {
         super(form);
         this.type = ProblemType.CHOICE;
         this.suggest = form.getSuggest();
+        this.answer = form.getAnswer();
     }
 
     @Override
@@ -54,9 +55,9 @@ public class ChoiceProblem extends Problem {
         }
 
         if(check) {
-            return new MarkingProblem(super.getId(), true, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
+            return new MarkingProblem(super.getId(), true, super.getScore(), ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
         } else {
-            return new MarkingProblem(super.getId(), false, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
+            return new MarkingProblem(super.getId(), false, 0, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
         }
     }
 }
