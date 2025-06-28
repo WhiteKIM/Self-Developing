@@ -36,10 +36,12 @@ public class EssayProblem extends Problem{
      */
     @Override
     public MarkingProblem mark(String submitAnswer) {
+        Long imageId = super.getImage() == null ? null : super.getImage().getId();
+
         if(answer.equals(submitAnswer)) {
-            return new MarkingProblem(super.getId(), true, super.getScore(),  ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+            return new MarkingProblem(super.getId(), true, super.getScore(),  ProblemType.ESSAY.toString(), super.getProblem(), imageId, submitAnswer, answer, getComment());
         } else {
-            return new MarkingProblem(super.getId(),  false, 0, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+            return new MarkingProblem(super.getId(),  false, 0, ProblemType.ESSAY.toString(), super.getProblem(), imageId, submitAnswer, answer, getComment());
         }
     }
 }

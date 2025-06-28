@@ -54,10 +54,12 @@ public class ChoiceProblem extends Problem {
             }
         }
 
+        Long imageId = super.getImage() == null ? null : super.getImage().getId();
+
         if(check) {
-            return new MarkingProblem(super.getId(), true, super.getScore(), ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
+            return new MarkingProblem(super.getId(), true, super.getScore(), ProblemType.CHOICE.toString(), super.getProblem(), imageId, submitAnswer, correctAnswer, getComment());
         } else {
-            return new MarkingProblem(super.getId(), false, 0, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
+            return new MarkingProblem(super.getId(), false, 0, ProblemType.CHOICE.toString(), super.getProblem(), imageId, submitAnswer, correctAnswer, getComment());
         }
     }
 }
