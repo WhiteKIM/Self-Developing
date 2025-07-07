@@ -3,11 +3,10 @@ package whitekim.self_developing.service;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.model.Certification;
+import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.EssayProblem;
-import whitekim.self_developing.repository.CertRepository;
-import whitekim.self_developing.repository.EssayProblemRepository;
-import whitekim.self_developing.repository.PaperRepository;
-import whitekim.self_developing.repository.ProblemRepository;
+import whitekim.self_developing.repository.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,5 +56,13 @@ public class EssayProblemService extends ProblemService<EssayProblem> {
     @Override
     public MarkingProblem markingProblem(Long problemId, String answer) {
         return super.markingProblem(problemId, answer);
+    }
+
+    @Override
+    public EssayProblem searchRandomProblemByCertification(String certName) {
+        Certification certification = certRepository.findByCertName(certName).orElseThrow(RuntimeException::new);
+        EssayProblemRepository repository = (EssayProblemRepository) problemRepository;
+
+        return repository.selectRandomProblemByCertification(certification);
     }
 }

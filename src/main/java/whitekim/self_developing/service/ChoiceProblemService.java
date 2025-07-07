@@ -3,6 +3,7 @@ package whitekim.self_developing.service;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.ChoiceProblemRepository;
@@ -59,5 +60,16 @@ public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
         return super.markingProblem(problemId, answer);
     }
 
+    /**
+     * 해당 자격증 카테고리 내에서 문제를 랜덤하게 선택한다.
+     * @param certName
+     * @return
+     */
+    @Override
+    public ChoiceProblem searchRandomProblemByCertification(String certName) {
+        Certification certification = certRepository.findByCertName(certName).orElseThrow(RuntimeException::new);
+        ChoiceProblemRepository repository = (ChoiceProblemRepository) problemRepository;
 
+        return repository.selectRandomProblemByCertification(certification);
+    }
 }

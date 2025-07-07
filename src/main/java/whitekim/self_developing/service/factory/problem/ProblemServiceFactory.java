@@ -10,7 +10,9 @@ import whitekim.self_developing.service.ChoiceProblemService;
 import whitekim.self_developing.service.EssayProblemService;
 import whitekim.self_developing.service.ProblemService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -34,5 +36,15 @@ public class ProblemServiceFactory {
         }
 
         return problemService;
+    }
+
+    public List<ProblemService<? extends Problem>> getService() {
+        List<ProblemService<? extends Problem>> serviceList = new ArrayList<>();
+
+        for(Map.Entry<Class<? extends Problem>, ProblemService<? extends Problem>> entry: problemServiceMap.entrySet()) {
+            serviceList.add(entry.getValue());
+        }
+
+        return serviceList;
     }
 }

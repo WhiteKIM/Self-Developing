@@ -21,9 +21,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public abstract class ProblemService<T extends Problem> {
-    private final ProblemRepository<T> problemRepository;
-    private final CertRepository certRepository;
-    private final PaperRepository paperRepository;
+    protected final ProblemRepository<T> problemRepository;
+    protected final CertRepository certRepository;
+    protected final PaperRepository paperRepository;
 
     public ProblemService(ProblemRepository<T> problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
         this.problemRepository = problemRepository;
@@ -144,4 +144,11 @@ public abstract class ProblemService<T extends Problem> {
 
         return problem.mark(answer);
     }
+
+    /**
+     * 추상 메소드
+     * 하위 자식 클래스 중에서 각각 랜덤하게 값을 하나씩 조회한다.
+     * @NOTICE : PostgreSQL에서만 지원합니다.
+     */
+    public abstract T searchRandomProblemByCertification(String certName);
 }

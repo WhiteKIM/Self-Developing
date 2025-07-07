@@ -3,6 +3,7 @@ package whitekim.self_developing.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.Problem;
