@@ -3,9 +3,9 @@ package whitekim.self_developing.model;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.model.type.ProblemType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +54,10 @@ public class ChoiceProblem extends Problem {
             }
         }
 
-        Long imageId = super.getImage() == null ? null : super.getImage().getId();
-
         if(check) {
-            return new MarkingProblem(super.getId(), true, super.getScore(), ProblemType.CHOICE.toString(), super.getProblem(), imageId, submitAnswer, correctAnswer, getComment());
+            return new MarkingProblem(super.getId(), true, super.getScore(), ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
         } else {
-            return new MarkingProblem(super.getId(), false, 0, ProblemType.CHOICE.toString(), super.getProblem(), imageId, submitAnswer, correctAnswer, getComment());
+            return new MarkingProblem(super.getId(), false, 0, ProblemType.CHOICE.toString(), submitAnswer, correctAnswer, getComment());
         }
     }
 }

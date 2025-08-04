@@ -104,19 +104,10 @@ public class PaperService {
         int wrongCount = 0;
         int score = 0;
 
-        // 제출된 답안이 더 적은 경우를 반영하자
         for(int i = 0; i < problemList.size(); i++) {
             Problem problem = problemList.get(i);
             ProblemService<? extends Problem> service = problemServiceFactory.createService(problem.getClass());
-            String answer = "";
-            MarkingProblem markResult = null;
-
-            try {
-                answer = answerList.get(i);
-                markResult = service.markingProblem(problem.getId(), answer);
-            } catch (IndexOutOfBoundsException out) {
-                markResult = service.markingProblem(problem.getId(), "");
-            }
+            MarkingProblem markResult = service.markingProblem(problem.getId(), answerList.get(i));
 
             if (markResult.isCorrect()) {
                 rightCount += 1;
