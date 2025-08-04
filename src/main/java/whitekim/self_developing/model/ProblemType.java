@@ -1,4 +1,4 @@
-package whitekim.self_developing.model.type;
+package whitekim.self_developing.model;
 
 public enum ProblemType {
     CHOICE, ESSAY

@@ -1,4 +1,4 @@
-package whitekim.self_developing.filter;
+package whitekim.self_developing.jwt.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,22 +31,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = request.getHeader("Access-Token");
+        UserDetails userDetails;
 
         log.info("[AccessToken Info] : {}", accessToken);
 
         if(accessToken.isBlank()) {
             filterChain.doFilter(request, response);
         }
-
-        String username = jwtUtils.verifyAccessToken(accessToken);
-
-        if(username.isBlank()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setHeader("Message", "Invalid Access Token");
-            response.sendRedirect("/api/v1/reissue/accessToken");
+        
+        if(!jwtUtils.verifyAccessToken(accessToken)) {
+            // 엑세스 토큰 만료
+            // 리프레시 토큰이 유효하면 엑세스 토큰 재발행
+            String username = jwtUtils.republishAccessToken(accessToken, response);
+            userDetails = userDetailsService.loadUserByUsername(username);
+        } else {
+            // 엑세스토큰 유효
+            userDetails = userDetailsService.loadUserByUsername(jwtUtils.getUsername(accessToken));
         }
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);

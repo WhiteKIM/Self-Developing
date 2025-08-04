@@ -1,4 +1,4 @@
-package whitekim.self_developing.filter;
+package whitekim.self_developing.jwt.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

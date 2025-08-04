@@ -2,9 +2,7 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import whitekim.self_developing.model.type.Permission;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,18 +28,6 @@ public class Member extends BaseEntity {
     @OneToMany
     @JoinColumn(name = "paper_id")
     private List<Paper> recentList = new ArrayList<>();     // 최근진행내역
-
-    /**
-     * 메타정보 추가
-     * IP
-     * 계정유효성
-     * 권한
-     * 마지막 접속 시간
-     */
-    private String latestAccessIp;
-    private Boolean isAvailableAccount;
-    private Permission permission;
-    private LocalDateTime latestAccessTime;
 
     /**
      * 비밀번호 암호화 적용
