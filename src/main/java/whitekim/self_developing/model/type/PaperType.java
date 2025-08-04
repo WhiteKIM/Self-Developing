@@ -1,4 +1,4 @@
-package whitekim.self_developing.model;
+package whitekim.self_developing.model.type;
 
 import lombok.Getter;
 

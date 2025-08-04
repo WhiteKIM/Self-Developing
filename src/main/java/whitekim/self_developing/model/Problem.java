@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.model.type.Difficulty;
 
 @Entity
 @Getter
@@ -34,6 +35,8 @@ public abstract class Problem extends BaseEntity {
     private Paper paper;
 
     private String comment; //해설
+
+    private Difficulty difficulty;
 
     private int score = 0;
 

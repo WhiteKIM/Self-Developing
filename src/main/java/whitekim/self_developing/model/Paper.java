@@ -3,10 +3,10 @@ package whitekim.self_developing.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import whitekim.self_developing.dto.request.PaperForm;
+import whitekim.self_developing.model.type.PaperType;
 
 import java.util.ArrayList;
 import java.util.List;

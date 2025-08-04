@@ -9,8 +9,6 @@ public record MarkingProblem(
         boolean isCorrect,
         int score,
         String type,
-        String content,
-        Long imageId,
         String submit,
         String answer,
         String comment  // 정답일 때는 굳이 출력할 필요가 없음
