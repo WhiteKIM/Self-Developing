@@ -10,7 +10,7 @@ import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.Category;
 import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.Page;
-import whitekim.self_developing.model.PageType;
+import whitekim.self_developing.model.type.PageType;
 import whitekim.self_developing.repository.CategoryRepository;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.PageRepository;

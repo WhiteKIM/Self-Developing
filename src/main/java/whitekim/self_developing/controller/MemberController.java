@@ -49,7 +49,7 @@ public class MemberController {
         try {
             memberService.loginMember(loginMember, response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(401).body(e.toString());
+            return ResponseEntity.status(401).body(null);
         }
 
         return ResponseEntity.ok("Success Login");
