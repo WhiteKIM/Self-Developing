@@ -11,6 +11,14 @@ import java.time.LocalDateTime;
 /**
  * @author whitekim
  * 엔티티 클래스에 대해서 기본적인 정보 작성
+ * 기본적인 메타데이터 관리
+ * 생성시간
+ * 수정시간
+ * 생성자
+ * 수정자
+ * 버전
+ * 삭제여부
+ * 삭제시간
  */
 @Getter
 @MappedSuperclass
@@ -31,10 +39,14 @@ public abstract class BaseEntity {
     // 삭제 시간
     private LocalDateTime atDeleted;
 
+    private String firstCreateId;
+    private String lastModifierId;
+    private Long version;
+
     /**
      * 삭제요청을 처리할 기본 기능
      */
-    public void requestDeleted() {
+    protected void requestDeleted() {
        this.isDeleted = true;
        this.atDeleted = LocalDateTime.now();
     }
@@ -42,7 +54,7 @@ public abstract class BaseEntity {
     /**
      * 삭제된 항목을 다시 원복하기 위한 기능
      */
-    public void requestDeletedRestore() {
+    protected void requestDeletedRestore() {
         this.isDeleted = false;
         this.atDeleted = null;
     }

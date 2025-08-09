@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import whitekim.self_developing.model.enumerate.Permission;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,18 @@ public class Member extends BaseEntity {
     private Point point;                                    // 사용자 포인트
     
     private int wrongPasswordCount = 0;                     // 사용자 비밀번호 오입력 건수  5이상부터는 계정 비활성화 및 비밀번호 변경 요청
+
+    /**
+     * 메타정보 추가
+     * IP
+     * 계정유효성
+     * 권한
+     * 마지막 접속 시간
+     */
+    private String latestAccessIp;
+    private Boolean isAvailableAccount;
+    private Permission permission;
+    private LocalDateTime latestAccessTime;
 
     /**
      * 비밀번호 암호화 적용
