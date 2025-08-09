@@ -1,12 +1,15 @@
 package whitekim.self_developing.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import whitekim.self_developing.dto.request.PaperForm;
+import whitekim.self_developing.model.enumerate.PaperType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,14 @@ public class Paper extends BaseEntity {
 
     @OneToMany(mappedBy = "paper")
     private List<Problem> problemList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "vote_id")
+    private List<Vote> voteList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "tag_id")
+    private List<Tag> tagList = new ArrayList<>();
 
     public Paper(PaperForm paperForm) {
         this.title = paperForm.getTitle();

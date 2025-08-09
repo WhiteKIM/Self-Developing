@@ -2,11 +2,21 @@ package whitekim.self_developing.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.hibernate.validator.constraints.Range;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author WhiteKIM
+ * 문제 엔티티
+ * 기본적으로 문제가 가지는 정보는 해당 클래스에 작성
+ * 필요시 해당 클래스 상속 후 구현하여 세부문제 클래스 생성을 권장
+ */
 @Entity
 @Getter
 @DiscriminatorColumn(name = "DTYPE")
@@ -33,9 +43,21 @@ public abstract class Problem extends BaseEntity {
     @JsonIgnore
     private Paper paper;
 
-    private String comment; //해설
+    @OneToMany
+    @JoinColumn(name = "vote_id")
+    private List<Vote> voteList = new ArrayList<>();
 
-    private int score = 0;
+    @OneToMany
+    @JoinColumn(name = "tag_id")
+    private List<Tag> tagList = new ArrayList<>();
+
+    private String comment;     //해설
+
+    @Min(value = 0L)
+    private int score = 0;      // 점수
+
+    @Range(min = 0, max = 5)
+    private int difficulty = 0;   // 난이도
 
     public Problem(ProblemForm form) {
         this.title = form.getTitle();

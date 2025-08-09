@@ -3,9 +3,9 @@ package whitekim.self_developing.model;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.model.enumerate.ProblemType;
 
 import java.util.ArrayList;
 import java.util.List;

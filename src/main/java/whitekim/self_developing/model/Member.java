@@ -2,6 +2,7 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import whitekim.self_developing.model.enumerate.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,14 @@ public class Member extends BaseEntity {
     @OneToMany
     @JoinColumn(name = "paper_id")
     private List<Paper> recentList = new ArrayList<>();     // 최근진행내역
+
+    private Permission permission = Permission.USER;        // 사용자권한(기본값 : 사용자)
+
+    @OneToOne
+    @JoinColumn(name = "point_id")
+    private Point point;                                    // 사용자 포인트
+    
+    private int wrongPasswordCount = 0;                     // 사용자 비밀번호 오입력 건수  5이상부터는 계정 비활성화 및 비밀번호 변경 요청
 
     /**
      * 비밀번호 암호화 적용
@@ -66,6 +75,7 @@ public class Member extends BaseEntity {
      * @param password - 인코딩된 UUID 문자열
      */
     public void resetPassword(String password) {
+        this.wrongPasswordCount = 0;
         this.password = password;
     }
 

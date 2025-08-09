@@ -6,7 +6,7 @@ import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.EssayProblem;
 import whitekim.self_developing.model.Problem;
-import whitekim.self_developing.model.ProblemType;
+import whitekim.self_developing.model.enumerate.ProblemType;
 
 import java.util.HashMap;
 import java.util.Map;

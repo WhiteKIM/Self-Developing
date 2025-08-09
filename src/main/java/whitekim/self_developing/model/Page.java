@@ -2,6 +2,7 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import whitekim.self_developing.model.enumerate.PageType;
 
 import java.util.ArrayList;
 import java.util.List;
