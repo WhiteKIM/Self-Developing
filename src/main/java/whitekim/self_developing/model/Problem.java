@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.validator.constraints.Range;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
-import whitekim.self_developing.model.type.Difficulty;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
 package whitekim.self_developing.model;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 
@@ -11,10 +12,26 @@ import java.util.List;
  * @author whitekim
  * 사용자 포인트 및 포인트 이력 등을 관리하는 항목
  */
+@Entity
 public class Point extends BaseEntity {
     private BigDecimal pointQuantity = BigDecimal.ZERO;
 
     @OneToMany
     @JoinColumn(name = "log_id")
     private List<Log> logList = new ArrayList<>();
+
+    public void payPoint(Problem problem) {
+        this.logList.add(new Log("Point", "create", "pay a Point"));
+
+        // 일단 문제 난이도에 비례하여 포인트를 지급한다.
+        long pointRate = Long.parseLong(System.getProperty("point.pay_rate"));
+
+        // 포인트 지급방식 = 문제 난이도 * 포인트 지급비율
+        pointQuantity = pointQuantity.add(
+                BigDecimal.valueOf(pointRate).multiply(
+                        BigDecimal.valueOf(problem.getDifficulty()
+                        )
+                )
+        );
+    }
 }

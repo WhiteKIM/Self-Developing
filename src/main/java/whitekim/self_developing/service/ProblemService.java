@@ -1,14 +1,12 @@
 package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotExistProblemException;
 import whitekim.self_developing.model.Certification;
-import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.repository.CertRepository;

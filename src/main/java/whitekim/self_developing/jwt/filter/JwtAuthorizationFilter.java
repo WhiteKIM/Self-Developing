@@ -1,6 +1,7 @@
 package whitekim.self_developing.jwt.filter;
 
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         
-        if(!jwtUtils.verifyAccessToken(accessToken)) {
+        if(!jwtUtils.verifyAccessToken(accessToken).isEmpty()) {
             // 엑세스 토큰 만료
             // 리프레시 토큰이 유효하면 엑세스 토큰 재발행
-            String username = jwtUtils.republishAccessToken(accessToken, response);
+            String accToken = jwtUtils.republishAccessToken(accessToken);
+            String username = jwtUtils.getUsernameByAccessToken(accessToken);
             userDetails = userDetailsService.loadUserByUsername(username);
         } else {
             // 엑세스토큰 유효
-            userDetails = userDetailsService.loadUserByUsername(jwtUtils.getUsername(accessToken));
+            userDetails = userDetailsService.loadUserByUsername(jwtUtils.getUsernameByAccessToken(accessToken));
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

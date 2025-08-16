@@ -15,4 +15,10 @@ public class Log extends BaseEntity {
     private String job;         // 발생된 작업(엔티티)명
     private String method;      // 발생된 메소드 
     private String message;     // 발생된 로그 메시지
+
+    public Log(String job, String method, String message) {
+        this.job = job;
+        this.method = method;
+        this.message = message;
+    }
 }

@@ -48,7 +48,6 @@ public class Member extends BaseEntity {
      */
     private String latestAccessIp;
     private Boolean isAvailableAccount;
-    private Permission permission;
     private LocalDateTime latestAccessTime;
 
     /**

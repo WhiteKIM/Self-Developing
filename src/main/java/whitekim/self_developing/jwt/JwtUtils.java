@@ -7,7 +7,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
 import whitekim.self_developing.exception.PermissionDeniedException;
 
@@ -21,13 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class JwtUtils {
     public static JwtUtils jwtUtils;
-
-    private SecretKey secretKey = null; // 시크릿 키
     private final String key;
     private final Long refreshExpirationTime; // 리프레시토큰 만료시간
     private final Long accessExpirationTime; // 엑세스토큰 만료시간
     private final Map<String, RefreshToken> tokenStore = new ConcurrentHashMap<>();   // 토근 저장소
-    
+    private SecretKey secretKey = null; // 시크릿 키
+
     public JwtUtils(@Value("${secret.key}") String key, @Value("${token.refresh-token.expiration}") Long refreshExpirationTime, @Value("${token.access-token.expiration}") Long accessExpirationTime) {
         this.refreshExpirationTime = refreshExpirationTime;
         this.accessExpirationTime = accessExpirationTime;
@@ -41,7 +39,6 @@ public class JwtUtils {
      * 없다면 리프레시 토큰과 엑세스 토큰을 발행
      * @param username - 로그인한 사용자
      */
-    /* @BUG : 해당 코드에서 username으로 Map이 세팅되어 중복로그인이 차단되는 문제가 발생 */
     public void publishToken(String username, HttpServletResponse response) {
         // 이전에 발행된 리프레시 토큰이 존재하고, 해당 토큰이 유효한 경우
         if(tokenStore.containsKey(username) && !verifyRefreshToken(tokenStore.get(username).getToken()).isBlank()) {
@@ -51,9 +48,8 @@ public class JwtUtils {
         }
 
         // 리프레시 토큰도 유효하지 않은 경우
-        RefreshToken refreshToken = publishRefreshToken(username);
+        publishRefreshToken(username);
         AccessToken accessToken = publishAccessToken(username);
-        response.setHeader("Refresh-Token", refreshToken.getToken());
         response.setHeader("Access-Token", accessToken.getToken());
     }
 
@@ -62,7 +58,7 @@ public class JwtUtils {
      * 리프레시 토큰이 만료되었다면 오류 전달
      * @param refreshToken - 리프레시토큰
      */
-    public String republishToken(String refreshToken) {
+    public String republishAccessToken(String refreshToken) {
         // 이전에 발행된 리프레시 토큰이 존재하고, 해당 토큰이 유효한 경우
         String username = verifyRefreshToken(refreshToken);
         if(username == null) {
@@ -78,7 +74,7 @@ public class JwtUtils {
     /**
      * 리프레시 토근 발행
      */
-    private RefreshToken publishRefreshToken(String username) {
+    private void publishRefreshToken(String username) {
         String token = Jwts.builder()
                 .subject(username)
                 .signWith(secretKey)
@@ -88,8 +84,6 @@ public class JwtUtils {
 
         RefreshToken refreshToken = new RefreshToken(username, token);
         tokenStore.put(username, refreshToken);
-
-        return refreshToken;
     }
 
     /**
@@ -116,7 +110,7 @@ public class JwtUtils {
                 .build()
                 .parseSignedClaims(accessToken);
 
-        if(!claimsJws.getPayload().getExpiration().before(new Date())) {
+        if(claimsJws.getPayload().getExpiration().before(new Date())) {
             // 만료된 토큰
             return null;
         }
@@ -133,12 +127,32 @@ public class JwtUtils {
                 .build()
                 .parseSignedClaims(refreshToken);
 
-        if(!claimsJws.getPayload().getExpiration().before(new Date())) {
+        if(claimsJws.getPayload().getExpiration().before(new Date())) {
             // 만료된 토큰
             return null;
         }
 
         return claimsJws.getPayload().getSubject();
+    }
+
+
+    /**
+     * 엑세스 토큰에 대한 사용자 정보 조회
+     * @param accessToken - 인증된 엑세스 토큰
+     * @return - 토큰 소유자 정보
+     */
+    public String getUsernameByAccessToken(String accessToken) {
+        if(accessToken.isBlank()) {
+            throw new RuntimeException();
+        }
+        
+        return Jwts.
+                parser().
+                verifyWith(secretKey).
+                build().
+                parseSignedClaims(accessToken).
+                getPayload().
+                getSubject();
     }
 
     /**

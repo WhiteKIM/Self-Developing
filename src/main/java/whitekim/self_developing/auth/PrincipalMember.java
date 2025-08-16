@@ -34,6 +34,10 @@ public class PrincipalMember implements UserDetails {
         return member.getId();
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     /**
      * 비밀번호 5회 이상 오입력시 비활성화 처리
      * @return : 5회 이상 false

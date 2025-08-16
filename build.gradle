@@ -6,7 +6,6 @@ plugins {
 
 group = 'whitekim'
 version = '0.0.1-SNAPSHOT'
-def generated = 'src/main/generated'
 
 java {
 	toolchain {
@@ -34,12 +33,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.session:spring-session-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-validation:3.5.3'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	/* Annotation Processor */
-	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+//	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+//	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+//	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 	/* compileOnly */
 	compileOnly 'org.projectlombok:lombok'
@@ -55,7 +54,6 @@ dependencies {
 
 	/* testImplementation */
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	/* testRuntimeOnly */
@@ -65,16 +63,3 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-// QueryDSL 미사용으로 아래 호출부는 미사용하도록 처리
-//tasks.withType(JavaCompile) {
-//	options.getGeneratedSourceOutputDirectory().set(file(generated))
-//}
-//
-//sourceSets {
-//	main.java.srcDirs += [ generated ]
-//}
-//
-//clean {
-//	delete file(generated)
-//}

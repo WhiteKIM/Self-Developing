@@ -23,7 +23,7 @@ public class TokenController {
         String accessToken = "";
 
         try {
-            accessToken = jwtUtils.republishToken(refreshToken);
+            accessToken = jwtUtils.republishAccessToken(refreshToken);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.toString());
         }
