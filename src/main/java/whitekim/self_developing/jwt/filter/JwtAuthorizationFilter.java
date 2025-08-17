@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import whitekim.self_developing.jwt.JwtUtils;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
  * 인가 필터
  * 해당 사용자가 인증완료된 사용자인지 아닌지를 판별한다.
  */
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -36,14 +38,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         log.info("[AccessToken Info] : {}", accessToken);
 
-        if(accessToken.isBlank()) {
+        if(accessToken == null || accessToken.isBlank()) {
             filterChain.doFilter(request, response);
+            return;
         }
         
-        if(!jwtUtils.verifyAccessToken(accessToken).isEmpty()) {
+        if(jwtUtils.verifyAccessToken(accessToken, response) == null || jwtUtils.verifyAccessToken(accessToken, response).isBlank()) {
             // 엑세스 토큰 만료
             // 리프레시 토큰이 유효하면 엑세스 토큰 재발행
-            String accToken = jwtUtils.republishAccessToken(accessToken);
+            String accToken = jwtUtils.republishAccessToken(accessToken, response);
             String username = jwtUtils.getUsernameByAccessToken(accessToken);
             userDetails = userDetailsService.loadUserByUsername(username);
         } else {

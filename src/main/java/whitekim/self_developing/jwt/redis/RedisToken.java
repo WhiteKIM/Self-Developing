@@ -1,6 +1,5 @@
 package whitekim.self_developing.jwt.redis;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;

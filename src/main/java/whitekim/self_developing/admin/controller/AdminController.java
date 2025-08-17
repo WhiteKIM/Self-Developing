@@ -2,6 +2,9 @@ package whitekim.self_developing.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author WhiteKIM
@@ -15,5 +18,12 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/admin")
 public class AdminController {
+
+    @GetMapping("/")
+    @ResponseBody
+    public String adminTest() {
+        return "test";
+    }
 }
