@@ -74,7 +74,7 @@ public class MemberService {
      * @param updateInfo - 업데이트할 사용자 정보
      */
     public void modifyMemberInfo(Member updateInfo) {
-        
+
     }
 
     /**
@@ -133,5 +133,25 @@ public class MemberService {
             Problem problem = repository.findById(submitProblem.getId()).orElseThrow();
             loginMember.addWrongProblem(problem);
         }
+    }
+
+    /**
+     * 사용자 로그인 성공 시 로그 기록
+     * @param member - 로그인 사용자
+     * @param remoteIpAddress - 로그인 IP
+     */
+    public void updateLoginSuccessInfo(Member member, String remoteIpAddress) {
+        member.updateLoginIPAddress(remoteIpAddress);
+    }
+
+
+    /**
+     * 사용자 로그인 실패 시 실패카운트 기록
+     * @param username - 로그인에 실패한 사용자 정보
+     */
+    public void updateLoginFailInfo(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow();
+
+        member.updateLoginFail();
     }
 }
