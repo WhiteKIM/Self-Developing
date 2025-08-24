@@ -95,6 +95,23 @@ public class Member extends BaseEntity {
         this.password = password;
     }
 
+    /**
+     * 현재 로그인을 시도한 주소로 최근 로그인 IP를 수정
+     * @param ipAddress : 로그인을 시도한 주소 정보
+     */
+    public void updateLoginIPAddress(String ipAddress) {
+        latestAccessIp = ipAddress;
+        wrongPasswordCount = 0;
+    }
+
+    /**
+     * 로그인 실패시 실패 카운트를 하나씩 올려준다.
+     * 5이상은 더 이상 로그인을 시도할 수 없다.
+     */
+    public void updateLoginFail() {
+        wrongPasswordCount+=1;
+    }
+
     public void addWrongProblem(Problem problem) {
         wrongList.add(problem);
     }
