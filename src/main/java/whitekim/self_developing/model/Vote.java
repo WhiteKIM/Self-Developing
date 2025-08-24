@@ -12,4 +12,10 @@ public class Vote extends BaseEntity {
     private Reaction type;
     private String voteUserId;
     private String voteUserIp;
+
+    public Vote(Reaction type, String voteUserId, String voteUserIp) {
+        this.type = type;
+        this.voteUserId = voteUserId;
+        this.voteUserIp = voteUserIp;
+    }
 }

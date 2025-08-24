@@ -30,6 +30,10 @@ public class Member extends BaseEntity {
     @OneToMany
     @JoinColumn(name = "paper_id")
     private List<Paper> recentList = new ArrayList<>();     // 최근진행내역
+    
+    @OneToMany
+    @JoinColumn(name = "problem_history_id")
+    private List<ProblemHistory> problemHistoryList = new ArrayList<>();   // 최근 해결문제
 
     private Permission permission = Permission.USER;        // 사용자권한(기본값 : 사용자)
 
@@ -93,5 +97,18 @@ public class Member extends BaseEntity {
 
     public void addWrongProblem(Problem problem) {
         wrongList.add(problem);
+    }
+
+    /**
+     * 수행한 문제 이력 추가
+     * @param history - 최근 해결한 문제내역 정보
+     */
+    public void addProblemHistory(ProblemHistory history) {
+        // 내역은 최대 30개까지 등록
+        if(problemHistoryList.size() >= 30) {
+            problemHistoryList.removeFirst();
+        }
+
+        problemHistoryList.add(history);
     }
 }
