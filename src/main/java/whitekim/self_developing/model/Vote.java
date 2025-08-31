@@ -1,6 +1,7 @@
 package whitekim.self_developing.model;
 
 import jakarta.persistence.Entity;
+import lombok.Getter;
 import whitekim.self_developing.model.enumerate.Reaction;
 
 /**
@@ -8,6 +9,7 @@ import whitekim.self_developing.model.enumerate.Reaction;
  * 비회원의 경우에는 Ip만 기록하고, 회원이라면 사용자id까지 기록한다
  */
 @Entity
+@Getter
 public class Vote extends BaseEntity {
     private Reaction type;
     private String voteUserId;

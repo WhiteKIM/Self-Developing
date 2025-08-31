@@ -39,6 +39,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("[AccessToken Info] : {}", accessToken);
 
         if(accessToken == null || accessToken.isBlank()) {
+            log.info("[Access Token] Token is Empty or Not Available");
             filterChain.doFilter(request, response);
             return;
         }
@@ -46,15 +47,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if(jwtUtils.verifyAccessToken(accessToken, response) == null || jwtUtils.verifyAccessToken(accessToken, response).isBlank()) {
             // 엑세스 토큰 만료
             // 리프레시 토큰이 유효하면 엑세스 토큰 재발행
+            log.info("[Access Token] Token is expired");
             String accToken = jwtUtils.republishAccessToken(accessToken, response);
             String username = jwtUtils.getUsernameByAccessToken(accessToken);
             userDetails = userDetailsService.loadUserByUsername(username);
         } else {
             // 엑세스토큰 유효
+            log.info("[Access Token] Success Get Authentication");
             userDetails = userDetailsService.loadUserByUsername(jwtUtils.getUsernameByAccessToken(accessToken));
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);
+        
+        // 다음 경로로 요청을 전달
+        filterChain.doFilter(request, response);
     }
 }

@@ -29,6 +29,7 @@ public class PaperService {
     private final ProblemFactory problemFactory;
     private final ProblemRepoFactory problemRepoFactory;
     private final ProblemServiceFactory problemServiceFactory;
+    private final VoteService voteService;
 
     /**
      * 시험지를 등록합니다.
@@ -120,5 +121,15 @@ public class PaperService {
         }
 
         return new MarkingPaper(paper.getTitle(), paper.getTitle(), score, rightCount, wrongCount, LocalDateTime.now(), markingProblemList);
+    }
+
+    public void addBVote(Long paperId, String type) {
+        Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
+        paper.addVote(voteService.addVote(type));
+    }
+
+    public void removeVote(Long paperId) {
+        Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
+        //
     }
 }

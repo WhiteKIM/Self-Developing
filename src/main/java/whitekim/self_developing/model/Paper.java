@@ -56,4 +56,8 @@ public class Paper extends BaseEntity {
     public void registerPage(Page page) {
         this.page = page;
     }
+
+    public void addVote(Vote vote) {
+        this.voteList.add(vote);
+    }
 }

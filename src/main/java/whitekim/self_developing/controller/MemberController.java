@@ -54,4 +54,11 @@ public class MemberController {
 
         return ResponseEntity.ok("Success Login");
     }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity<String> resetPassword(@RequestBody Long memberId) {
+        String resetPassword = memberService.resetMemberPassword(memberId);
+
+        return ResponseEntity.ok(resetPassword);
+    }
 }

@@ -17,6 +17,7 @@ import whitekim.self_developing.repository.VoteRepository;
 @RequiredArgsConstructor
 public class VoteService {
     private final VoteRepository voteRepository;
+    private final MemberService memberService;
 
     public Vote addVote(String type) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -25,6 +26,10 @@ public class VoteService {
         String username = auth.getName();
         Vote vote = new Vote(Reaction.fromValue(type), username, ipAddr);
         return voteRepository.save(vote);
+    }
+
+    public void removeVote() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     }
     
     private String getIpAddr() {

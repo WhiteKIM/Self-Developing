@@ -1,4 +1,11 @@
 package whitekim.self_developing.dto.request;
 
-public record LoginMember(String username, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginMember(
+        @NotBlank
+        String username,
+        @NotBlank
+        String password
+) {
 }

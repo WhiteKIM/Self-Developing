@@ -3,6 +3,7 @@ package whitekim.self_developing.service;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -98,6 +100,8 @@ public class MemberService {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
         Long loginMemberId = userDetails.getId();
 
+        log.info("[PaperService] Login Member Info : {} {}", loginMemberId, userDetails);
+
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
@@ -120,7 +124,7 @@ public class MemberService {
 
     /**
      * 틀린 오답문제 내역을 추가
-     * @param wrongProblemList
+     * @param wrongProblemList - 틀린 문제 히스토리 리스트
      */
     public void addProblemIntoWrongList(List<SubmitProblem> wrongProblemList) {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
