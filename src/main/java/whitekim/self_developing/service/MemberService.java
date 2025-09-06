@@ -14,6 +14,7 @@ import whitekim.self_developing.dto.request.SubmitProblem;
 import whitekim.self_developing.jwt.JwtUtils;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
+import whitekim.self_developing.model.Point;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.repository.MemberRepository;
 import whitekim.self_developing.repository.PaperRepository;
@@ -34,13 +35,22 @@ public class MemberService {
     private final PaperRepository paperRepository;
     private final ProblemRepoFactory repoFactory;
     private final PasswordEncoder passwordEncoder;
+    private final PointService pointService;
     private final JwtUtils jwtUtils;
 
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);
     }
 
+    /**
+     * 사용자정보 최초 생성
+     * @param member
+     * @throws ConstraintViolationException
+     */
     public void registerMember(Member member) throws ConstraintViolationException {
+        Point emptyPoint = pointService.createEmptyPoint();
+        member.setPoint(emptyPoint);        // 빈 포인트와 관계 설정
+        
         // 등록가능한 사용자인지 판단
         memberRepository.save(member);
 

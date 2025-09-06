@@ -66,6 +66,7 @@ public abstract class Problem extends BaseEntity {
         this.problem = form.getProblem();
         this.comment = form.getComment();
         this.score = form.getScore();
+        this.difficulty = form.getDifficulty();
     }
 
     public void update(Problem updateProblem) {

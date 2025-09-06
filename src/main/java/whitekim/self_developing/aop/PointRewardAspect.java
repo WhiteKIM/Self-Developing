@@ -1,10 +1,10 @@
 package whitekim.self_developing.aop;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,41 +22,34 @@ import whitekim.self_developing.service.factory.problem.ProblemServiceFactory;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 @Aspect
 public class PointRewardAspect {
     private final PointService pointService;
     private final ProblemServiceFactory problemServiceFactory;
 
     @AfterReturning(
-            pointcut = "execution (whitekim.self_developing.service..ProblemService+.markingProblem(..)) && target(problemService)",
+            pointcut = "execution(* whitekim.self_developing.service..ProblemService+.markingProblem(..)) && target(problemService)",
             returning = "result"
     )
     public void payPoint(JoinPoint joinPoint, ProblemService problemService, MarkingProblem result) {
+        log.info("[PointReward] Obtain Point Aspect");
+
         Object[] args = joinPoint.getArgs();
 
         Long problemId = (Long) args[0];
 
         // 인증정보를 가져와서 사용자 정보를 불러와야해
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        PrincipalMember detailMember = (PrincipalMember) auth.getDetails();
+        PrincipalMember detailMember = (PrincipalMember) auth.getPrincipal();
         Member authMember = detailMember.getMember();
 
         // 문제 정보 조회
-        Class<?> realService = AopUtils.getTargetClass(problemService);
-        String problemType = realService.getSimpleName().replace("Service", "");
-        try {
-            Class<? extends Problem> clazz = (Class<? extends Problem>) Class.forName(problemType);
-            ProblemService<? extends Problem> service = problemServiceFactory.createService(clazz);
-            Problem problem = (Problem) problemService.getProblem(problemId).orElseThrow();
+        Problem problem = (Problem) problemService.getProblem(problemId).orElseThrow();
 
-            // 결과 불러오기
-            if(result.isCorrect()) {
-                pointService.earnPoint(authMember, problem);
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        // 결과 불러오기
+        if(result.isCorrect()) {
+            pointService.earnPoint(authMember, problem);
         }
-
-
     }
 }

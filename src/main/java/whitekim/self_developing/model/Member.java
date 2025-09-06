@@ -35,12 +35,15 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "problem_history_id")
     private List<ProblemHistory> problemHistoryList = new ArrayList<>();   // 최근 해결문제
 
+    @Builder.Default
     private Permission permission = Permission.USER;        // 사용자권한(기본값 : 사용자)
 
+    @Setter
     @OneToOne
     @JoinColumn(name = "point_id")
-    private Point point;                                    // 사용자 포인트
-    
+    private Point point;                                     // 사용자 포인트
+
+    @Builder.Default
     private int wrongPasswordCount = 0;                     // 사용자 비밀번호 오입력 건수  5이상부터는 계정 비활성화 및 비밀번호 변경 요청
 
     /**
