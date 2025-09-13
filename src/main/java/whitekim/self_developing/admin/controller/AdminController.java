@@ -26,6 +26,11 @@ public class AdminController {
         return "main";
     }
 
+    @GetMapping("/login")
+    public String adminLogin() {
+        return "login";
+    }
+
     @GetMapping("/stat")
     public String adminStatPage(Model model) {
 

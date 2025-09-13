@@ -32,7 +32,10 @@ public class WebSecurityConfig {
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole(String.valueOf(Permission.ADMIN))
+                        .requestMatchers("/script/**").permitAll()
+                        .requestMatchers("/css/**").permitAll()
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter,
                         UsernamePasswordAuthenticationFilter.class);

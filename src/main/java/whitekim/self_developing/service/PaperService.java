@@ -123,7 +123,7 @@ public class PaperService {
         return new MarkingPaper(paper.getTitle(), paper.getTitle(), score, rightCount, wrongCount, LocalDateTime.now(), markingProblemList);
     }
 
-    public void addBVote(Long paperId, String type) {
+    public void addVote(Long paperId, String type) {
         Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
         paper.addVote(voteService.addVote(type));
     }

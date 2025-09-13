@@ -97,4 +97,12 @@ public abstract class Problem extends BaseEntity {
      * @return
      */
     public abstract MarkingProblem mark(String submitAnswer);
+
+    public void addVote(Vote vote) {
+        this.voteList.add(vote);
+    }
+
+    public void cancelVote(Vote vote) {
+        this.voteList.remove(vote);
+    }
 }

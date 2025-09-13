@@ -22,11 +22,13 @@ public abstract class ProblemService<T extends Problem> {
     protected final ProblemRepository<T> problemRepository;
     protected final CertRepository certRepository;
     protected final PaperRepository paperRepository;
+    protected final VoteService voteService;
 
-    public ProblemService(ProblemRepository<T> problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
+    public ProblemService(ProblemRepository<T> problemRepository, CertRepository certRepository, PaperRepository paperRepository, VoteService voteService) {
         this.problemRepository = problemRepository;
         this.certRepository = certRepository;
         this.paperRepository = paperRepository;
+        this.voteService = voteService;
     }
 
     /**
@@ -149,4 +151,17 @@ public abstract class ProblemService<T extends Problem> {
      * @NOTICE : PostgreSQL에서만 지원합니다.
      */
     public abstract T searchRandomProblemByCertification(String certName);
+
+    /**
+     * 문제집 추천 메소드
+     * 사용자가 입력한 추천 정보를 반영한다.
+     */
+    public void addVote(Long id, String type) {
+        T t = problemRepository.findById(id).orElseThrow();
+        t.addVote(voteService.addVote(type));
+    }
+
+    public void removeVote() {
+
+    }
 }
