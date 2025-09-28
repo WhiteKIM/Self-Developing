@@ -1,31 +1,28 @@
-package whitekim.self_developing.event.login;
+package whitekim.self_developing.event.Login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.service.MemberService;
 
-/**
- * 로그인 성공 이벤트 리스너
- * 성공 시 접속한 IP와 시간을 기록한다.
- */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LoginSuccessEventListener implements ApplicationListener<AuthenticationSuccessEvent> {
+
     private final MemberService memberService;
 
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
+        log.info("[LoginSuccessEvent] Success Login");
+
         Authentication auth = event.getAuthentication();
         PrincipalMember principalMember = (PrincipalMember) auth.getPrincipal();
 

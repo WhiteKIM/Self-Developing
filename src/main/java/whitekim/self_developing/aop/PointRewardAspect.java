@@ -14,7 +14,6 @@ import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.service.PointService;
 import whitekim.self_developing.service.ProblemService;
-import whitekim.self_developing.service.factory.problem.ProblemServiceFactory;
 
 /**
  * @author WhiteKIM
@@ -26,7 +25,6 @@ import whitekim.self_developing.service.factory.problem.ProblemServiceFactory;
 @Aspect
 public class PointRewardAspect {
     private final PointService pointService;
-    private final ProblemServiceFactory problemServiceFactory;
 
     @AfterReturning(
             pointcut = "execution(* whitekim.self_developing.service..ProblemService+.markingProblem(..)) && target(problemService)",

@@ -1,16 +1,17 @@
 package whitekim.self_developing.service;
 
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import whitekim.self_developing.auth.PrincipalMember;
-import whitekim.self_developing.dto.request.LoginMember;
 import whitekim.self_developing.dto.request.SubmitProblem;
+import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.jwt.JwtUtils;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
@@ -62,24 +63,34 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    /**
-     * 로그인 기능 수행
-     * @param member - 로그인 정보
-     */
-    public void loginMember(LoginMember member, HttpServletResponse response) {
-        Optional<Member> optionalMember = memberRepository.findByUsername(member.username());
-
-        if(optionalMember.isEmpty())
-            throw new UsernameNotFoundException("Not Correct UserName");
-
-        Member loginMember = optionalMember.get();
-
-        if(!passwordEncoder.matches(member.password(), loginMember.getPassword())) {
-            throw new RuntimeException("Password is Not Matched");
-        }
-
-        jwtUtils.publishToken(loginMember.getUsername(), response);
-    }
+//    /**
+//     * 로그인 기능 수행
+//     * @param member - 로그인 정보
+//     */
+//    public void loginMember(LoginMember member, HttpServletResponse response) {
+//        Optional<Member> optionalMember = memberRepository.findByUsername(member.username());
+//
+//        if(optionalMember.isEmpty())
+//            throw new UsernameNotFoundException("Not Correct UserName");
+//
+//        Member loginMember = optionalMember.get();
+//
+//        // @TODO : 추후에 로직을 분리해야함 => 현재 롤백 발생으로 기능 동작 X
+//        if(!passwordEncoder.matches(member.password(), loginMember.getPassword())) {
+//            log.info("[MemberService] Failed Login");
+//            loginMember.updateLoginFail();
+//            memberRepository.saveAndFlush(loginMember);
+//
+//            throw new RuntimeException("Password is Not Matched");
+//        }
+//
+//        log.info("[MemberService] Success Login");
+//
+//        loginMember.updateLoginIPAddress(getRemoteIpAddress());
+//        memberRepository.save(loginMember);
+//
+//        jwtUtils.publishToken(loginMember.getUsername(), response);
+//    }
 
     /**
      * 사용자 정보 업데이트
@@ -167,5 +178,41 @@ public class MemberService {
         Member member = memberRepository.findByUsername(username).orElseThrow();
 
         member.updateLoginFail();
+    }
+
+    /**
+     * 사용자 IP 주소 검출 기능
+     * @return - 검출된 IP 주소
+     */
+    private String getRemoteIpAddress() {
+        ServletRequestAttributes requestAttributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        if(requestAttributes == null) {
+            return null;
+        }
+
+        HttpServletRequest request = requestAttributes.getRequest();
+
+        // 프록시/로드밸런서 환경 고려
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            // 첫 번째가 원 클라이언트 IP
+            return xff.split(",")[0].trim();
+        }
+
+        String xri = request.getHeader("X-Real-IP");
+        if (xri != null && !xri.isBlank())
+            return xri.trim();
+
+        return request.getRemoteAddr();
+    }
+
+    /**
+     * 사용자 정보 수정
+     * @param updateMember - 업데이트 대상
+     * @param updateMemberInfo - 업데이트정보
+     */
+    public void updateMember(Member updateMember, UpdateMember updateMemberInfo) {
     }
 }

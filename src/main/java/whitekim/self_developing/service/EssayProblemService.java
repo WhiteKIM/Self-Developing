@@ -4,9 +4,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.Certification;
-import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.model.EssayProblem;
-import whitekim.self_developing.repository.*;
+import whitekim.self_developing.repository.CertRepository;
+import whitekim.self_developing.repository.EssayProblemRepository;
+import whitekim.self_developing.repository.PaperRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +15,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class EssayProblemService extends ProblemService<EssayProblem> {
-    public EssayProblemService(EssayProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
-        super(problemRepository, certRepository, paperRepository);
+    public EssayProblemService(EssayProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository, VoteService voteService) {
+        super(problemRepository, certRepository, paperRepository, voteService);
     }
 
     @Override

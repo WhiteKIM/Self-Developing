@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="whitekim.self_developing.repository.StatMapperRepository">
+    <!-- 사용자별 정오표 집계 구현 -->
+    <select id="selectBySolvedProblemStat" parameterType="long" resultType="map">
+        select
+            his.member_id,
+            coalesce(sum(
+                case when his.is_correct then
+                    1
+                else
+                    0
+            ), 0) as correct_count,
+            coalesce(sum(
+                case when !his.is_correct then
+                    1
+                else
+                    0
+            ), 0) as wrong_count
+        from problem_history his
+            join member mem
+                on his.member_id = mem.id
+            join problem pr
+                on his.problem_id = pr.id
+        where
+            his.member_id = #{memberId}
+        group by his.member_id
+    </select>
+
+    <!-- N일내 신규 유저수 집계 -->
+
+    <!-- 지금까지 등록된 문제, 문제집, 자격증 정보 조회 -->
+
+    <!-- N일동안 해결된 문제 수 -->
+
+    <!-- 난이도별 문제 정오표 통계 -->
+</mapper>

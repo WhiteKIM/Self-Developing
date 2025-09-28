@@ -1,6 +1,8 @@
-package whitekim.self_developing.event.login;
+package whitekim.self_developing.event.Login;
+
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.stereotype.Component;
@@ -12,11 +14,14 @@ import whitekim.self_developing.service.MemberService;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LoginFailEventListener implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
     private final MemberService memberService;
 
     @Override
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
+        log.info("[LoginFailEvent] Failed Login");
+
         String username  = (String) event.getAuthentication().getPrincipal();
 
         memberService.updateLoginFailInfo(username);

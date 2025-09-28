@@ -2,6 +2,7 @@ package whitekim.self_developing.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import whitekim.self_developing.dto.response.MemberDetail;
 import whitekim.self_developing.model.enumerate.Permission;
 
 import java.time.LocalDateTime;
@@ -130,5 +131,15 @@ public class Member extends BaseEntity {
         }
 
         problemHistoryList.add(history);
+    }
+
+    public MemberDetail toDto() {
+        return new MemberDetail(
+                username,
+                password,
+                email,
+                permission,
+                wrongPasswordCount
+        );
     }
 }

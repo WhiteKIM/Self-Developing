@@ -8,7 +8,6 @@ import whitekim.self_developing.model.ChoiceProblem;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.ChoiceProblemRepository;
 import whitekim.self_developing.repository.PaperRepository;
-import whitekim.self_developing.repository.ProblemRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +15,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
-    public ChoiceProblemService(ChoiceProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository) {
-        super(problemRepository, certRepository, paperRepository);
+    public ChoiceProblemService(ChoiceProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository, VoteService voteService) {
+        super(problemRepository, certRepository, paperRepository, voteService);
     }
 
     @Override
