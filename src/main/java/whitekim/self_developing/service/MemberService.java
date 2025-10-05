@@ -12,6 +12,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.SubmitProblem;
 import whitekim.self_developing.dto.request.UpdateMember;
+import whitekim.self_developing.dto.response.MemberInfo;
 import whitekim.self_developing.jwt.JwtUtils;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
@@ -119,14 +120,27 @@ public class MemberService {
      */
     public void addPaperIntoFavoriteList(Long paperId) {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
-        Long loginMemberId = userDetails.getId();
 
-        log.info("[PaperService] Login Member Info : {} {}", loginMemberId, userDetails);
-
-        Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
+        log.info("[PaperService] Login Member Info : {}", userDetails);
+        Member loginMember = userDetails.getMember();
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
         loginMember.addFavorite(paper);
+    }
+
+    /**
+     * 즐겨찾기 제거
+     * @param paperId
+     */
+    public void removePaperFromFavoriteList(Long paperId) {
+        PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
+
+        log.info("[PaperService] Login Member Info : {}", userDetails);
+
+        Member loginMember = userDetails.getMember();
+        Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
+
+        loginMember.removeFavorite(paper);
     }
 
     /**
@@ -214,5 +228,27 @@ public class MemberService {
      * @param updateMemberInfo - 업데이트정보
      */
     public void updateMember(Member updateMember, UpdateMember updateMemberInfo) {
+    }
+
+    /**
+     * 사용자 즐겨찾기 리스트 조회
+     * @param id
+     * @return
+     */
+    public MemberInfo getMemberFavoriteList(Long id) {
+        Member member = memberRepository.findMemberWithFavoriteList(id).orElseThrow();
+
+        return MemberInfo.from(member);
+    }
+
+    /**
+     * 사용자 최근내역 리스트 조회
+     * @param id
+     * @return
+     */
+    public MemberInfo getMemberRecentList(Long id) {
+        Member member = memberRepository.findMemberWithRecentList(id).orElseThrow();
+
+        return MemberInfo.from(member);
     }
 }

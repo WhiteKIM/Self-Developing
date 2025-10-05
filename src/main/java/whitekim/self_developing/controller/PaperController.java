@@ -63,4 +63,13 @@ public class PaperController {
 
         return ResponseEntity.ok("즐겨찾기 추가 성공");
     }
+
+    @PostMapping("/v1/favorite/remove")
+    public ResponseEntity<String> removeFavoritePaper(@RequestParam("paperId") Long paperId) {
+        log.info("[PaperController] PaperController.addFavoritePaper : {}", paperId);
+
+        memberService.removePaperFromFavoriteList(paperId);
+
+        return ResponseEntity.ok("즐겨찾기 제거 성공");
+    }
 }

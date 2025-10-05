@@ -11,7 +11,10 @@ import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.dto.response.MemberDetail;
 import whitekim.self_developing.model.Member;
+import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.service.MemberService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,5 +84,33 @@ public class MemberController {
         String resetPassword = memberService.resetMemberPassword(memberId);
 
         return ResponseEntity.ok(resetPassword);
+    }
+
+    /**
+     * 로그인한 사용자의 즐겨찾기 목록 조회
+     * @return
+     */
+    @GetMapping("/v1/favorite/list")
+    public ResponseEntity<List<Paper>> getMemberFavoriteList() {
+        PrincipalMember principalMember =
+                (PrincipalMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Paper> favoriteList = memberService.getMemberFavoriteList(principalMember.getId()).favoriteList();
+
+        return ResponseEntity.ok(favoriteList);
+    }
+
+    /**
+     * 로그인한 사용자의 최근 이력 조회
+     * @return
+     */
+    @GetMapping("/v1/recent")
+    public ResponseEntity<List<Paper>> getMemberRecentList() {
+        PrincipalMember principalMember =
+                (PrincipalMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Paper> favoriteList = memberService.getMemberRecentList(principalMember.getId()).recentList();
+
+        return ResponseEntity.ok(favoriteList);
     }
 }

@@ -71,7 +71,17 @@ public class Member extends BaseEntity {
      * @param paper - 추가할 문제집 정보
      */
     public void addFavorite(Paper paper) {
-        favoriteList.add(paper);
+        if(!favoriteList.contains(paper)) {
+            favoriteList.add(paper);
+        }
+    }
+
+    /**
+     * 즐겨찾기에서 해당 대상 제거
+     * @param paper - 제거할 문제집 정보
+     */
+    public void removeFavorite(Paper paper) {
+        favoriteList.remove(paper);
     }
 
     /**
@@ -142,4 +152,7 @@ public class Member extends BaseEntity {
                 wrongPasswordCount
         );
     }
+
+
+
 }
