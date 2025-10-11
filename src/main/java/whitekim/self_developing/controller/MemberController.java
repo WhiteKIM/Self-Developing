@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.UpdateMember;
-import whitekim.self_developing.dto.response.MemberDetail;
+import whitekim.self_developing.dto.response.MemberInfo;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.service.MemberService;
@@ -28,7 +28,7 @@ public class MemberController {
      * @return
      */
     @GetMapping("/info")
-    public ResponseEntity<MemberDetail> getDetailInfo() {
+    public ResponseEntity<MemberInfo> getDetailInfo() {
         PrincipalMember principalMember =
                 (PrincipalMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -36,7 +36,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        return ResponseEntity.ok(principalMember.getMember().toDto());
+        return ResponseEntity.ok(memberService.getMemberDetail(principalMember.getMember()));
     }
 
     @PostMapping("/join")

@@ -64,34 +64,15 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-//    /**
-//     * 로그인 기능 수행
-//     * @param member - 로그인 정보
-//     */
-//    public void loginMember(LoginMember member, HttpServletResponse response) {
-//        Optional<Member> optionalMember = memberRepository.findByUsername(member.username());
-//
-//        if(optionalMember.isEmpty())
-//            throw new UsernameNotFoundException("Not Correct UserName");
-//
-//        Member loginMember = optionalMember.get();
-//
-//        // @TODO : 추후에 로직을 분리해야함 => 현재 롤백 발생으로 기능 동작 X
-//        if(!passwordEncoder.matches(member.password(), loginMember.getPassword())) {
-//            log.info("[MemberService] Failed Login");
-//            loginMember.updateLoginFail();
-//            memberRepository.saveAndFlush(loginMember);
-//
-//            throw new RuntimeException("Password is Not Matched");
-//        }
-//
-//        log.info("[MemberService] Success Login");
-//
-//        loginMember.updateLoginIPAddress(getRemoteIpAddress());
-//        memberRepository.save(loginMember);
-//
-//        jwtUtils.publishToken(loginMember.getUsername(), response);
-//    }
+    /**
+     * 사용자정보 상세조회
+     * @param member - 로그인 정보
+     */
+    public MemberInfo getMemberDetail(Member member) {
+        Member targetMember = memberRepository.findById(member.getId()).orElseThrow();
+
+        return MemberInfo.from(targetMember);
+    }
 
     /**
      * 사용자 정보 업데이트
@@ -120,9 +101,10 @@ public class MemberService {
      */
     public void addPaperIntoFavoriteList(Long paperId) {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
+        Long loginMemberId = userDetails.getId();
 
         log.info("[PaperService] Login Member Info : {}", userDetails);
-        Member loginMember = userDetails.getMember();
+        Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
         loginMember.addFavorite(paper);
@@ -134,10 +116,11 @@ public class MemberService {
      */
     public void removePaperFromFavoriteList(Long paperId) {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
+        Long loginMemberId = userDetails.getId();
 
         log.info("[PaperService] Login Member Info : {}", userDetails);
 
-        Member loginMember = userDetails.getMember();
+        Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
         loginMember.removeFavorite(paper);

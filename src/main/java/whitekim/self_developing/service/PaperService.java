@@ -3,6 +3,7 @@ package whitekim.self_developing.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingPaper;
@@ -30,6 +31,7 @@ public class PaperService {
     private final ProblemRepoFactory problemRepoFactory;
     private final ProblemServiceFactory problemServiceFactory;
     private final VoteService voteService;
+    private final ImageService imageService;
 
     /**
      * 시험지를 등록합니다.
@@ -52,7 +54,7 @@ public class PaperService {
         return optPage.get().getPaperList();
     }
 
-    public void addProblem(Long paperId, List<ProblemForm> problemList) {
+    public void addProblem(Long paperId, List<ProblemForm> problemList, List<MultipartFile> uploadFiles) {
         Optional<Paper> optPaper = paperRepository.findById(paperId);
 
         if(optPaper.isEmpty()) {
@@ -61,11 +63,20 @@ public class PaperService {
 
         Paper paper = optPaper.get();
 
-        for(ProblemForm form : problemList) {
+        for(int i = 0; i < problemList.size(); i++) {
+            ProblemForm form = problemList.get(i);
+
             String type = form.getProblemType();
             // 적절한 타입으로 생성해서 넣어주어야 함
             Problem problem = problemFactory.createProblem(form);
             ProblemRepository<? extends Problem> problemRepository = problemRepoFactory.createRepository(form.getProblemType());
+
+            Image image = null;
+
+            if(uploadFiles != null  && !uploadFiles.get(i).isEmpty())
+                image = imageService.saveImage(uploadFiles.get(i));
+
+            problem.attachImage(image);
 
             switch (type) {
                 case "CHOICE":
@@ -132,4 +143,6 @@ public class PaperService {
         Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
         //
     }
+
+
 }

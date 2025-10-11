@@ -36,8 +36,14 @@ public class PaperController {
     }
 
     @PostMapping("/v1/registerProblem")
-    public ResponseEntity<String> registerProblemList(@RequestParam("paperId") Long paperId, @RequestPart(value = "uploadImage", required = false) List<MultipartFile> uploadImage, @RequestPart("problemList") List<ProblemForm> problemList) {
-        paperService.addProblem(paperId, problemList);
+    public ResponseEntity<String> registerProblemList(
+            @RequestParam("paperId") Long paperId,
+            @RequestPart("problemList") List<ProblemForm> problemList,
+            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> uploadFiles
+    ) {
+        log.info("UploadFiles : {}", uploadFiles);
+
+        paperService.addProblem(paperId, problemList, uploadFiles);
 
         return ResponseEntity.ok("문제를 등록하였습니다.");
     }

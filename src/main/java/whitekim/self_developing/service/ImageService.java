@@ -3,6 +3,7 @@ package whitekim.self_developing.service;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import whitekim.self_developing.utils.FileUtils;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -42,12 +44,15 @@ public class ImageService {
         return fileUtils.getUploadFile(image.getFilepath());
     }
 
-    public void saveImage(MultipartFile uploadFile) {
+    public Image saveImage(MultipartFile uploadFile) {
         String uploadFileName = fileUtils.uploadFile(uploadFile);
         int index = uploadFileName.lastIndexOf("/");
-        Image image = new Image(uploadFileName, uploadFileName.substring(index), uploadFile.getOriginalFilename());
 
-        imageRepository.save(image);
+        log.info("[ImageService] : {}", uploadFileName);
+
+        Image image = new Image(uploadFileName, uploadFileName.substring(index+1), uploadFile.getOriginalFilename());
+
+        return imageRepository.save(image);
     }
 
     public void updateImage(Long id, MultipartFile uploadFile) {

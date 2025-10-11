@@ -55,6 +55,8 @@ public class PointService {
         log.info("[PointService] Rate : {}, Difficult : {} Reward Point : {}", pointRate, problem.getDifficulty(), rewardPoint);
 
         memberPoint.addPoint(rewardPoint);
+
+        pointRepository.save(memberPoint);
     }
 
     /**

@@ -1,6 +1,7 @@
 package whitekim.self_developing.utils;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -14,6 +15,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class FileUtils {
 
@@ -41,16 +43,19 @@ public class FileUtils {
         int prefixIndex = filename.lastIndexOf(".");
         String prefix = filename.substring(prefixIndex);
 
-        String newFileName = UUID.randomUUID().toString()+"."+prefix;
+        log.info("[FileUtils] : {} {}", filename, prefix);
+
+        String newFileName = UUID.randomUUID().toString()+prefix;
         String filePath = path + "/"+newFileName;
         File upload = new File(filePath);
+
         try {
             uploadFile.transferTo(upload);
         } catch (IOException e) {
-            throw new RuntimeException("파일 업로드에 실패하였습니다.");
+            throw new RuntimeException("파일 업로드에 실패하였습니다." + e);
         }
 
-        return newFileName;
+        return filePath;
     }
 
     public void getUploadFile(String filePath, HttpServletResponse response) {
@@ -102,11 +107,15 @@ public class FileUtils {
         String os = System.getProperty("os.name");
         String path = "";
 
+        os = os.toLowerCase();
+
         if(os.contains("win")) {
             path = windowsPath;
         } else if(os.contains("nux")) {
             path = linuxPath;
         }
+
+        log.info("[FileUtils] : {}", path);
 
         try {
             Files.createDirectories(Paths.get(path));

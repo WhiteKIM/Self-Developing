@@ -84,6 +84,6 @@ public class TestConstruct {
         problemForm.setAnswer(List.of("test"));
         problemForm.setComment("test");
 
-        paperService.addProblem(1L, new ArrayList<>());
+        paperService.addProblem(1L, new ArrayList<>(), null);
     }
 }

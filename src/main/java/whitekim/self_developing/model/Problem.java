@@ -59,6 +59,10 @@ public abstract class Problem extends BaseEntity {
     @Range(min = 0, max = 5)
     private int difficulty = 0;   // 난이도
 
+    /**
+     * 이미지 없는 문제 등록
+     * @param form
+     */
     public Problem(ProblemForm form) {
         this.title = form.getTitle();
         this.round = form.getRound();
@@ -76,6 +80,7 @@ public abstract class Problem extends BaseEntity {
         this.problem = updateProblem.getProblem();
         this.image = updateProblem.getImage();
         this.comment = updateProblem.getComment();
+
     }
 
     /**

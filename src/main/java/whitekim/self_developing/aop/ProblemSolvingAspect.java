@@ -26,7 +26,7 @@ public class ProblemSolvingAspect {
     private final ProblemHistoryService historyService;
 
     @AfterReturning(
-            pointcut = "execution(* whitekim.self_developing.service..ProblemService+.markingProblem(..)) && target(problemService)",
+            pointcut = "execution(* whitekim.self_developing.service..ProblemService+.markingProblem(..))",
             returning = "solvingProblem"
     )
     public void solvedProblem(JoinPoint joinPoint, ProblemService problemService, MarkingProblem solvingProblem) {
