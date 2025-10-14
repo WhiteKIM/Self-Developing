@@ -152,7 +152,4 @@ public class Member extends BaseEntity {
                 wrongPasswordCount
         );
     }
-
-
-
 }

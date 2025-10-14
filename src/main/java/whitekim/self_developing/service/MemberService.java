@@ -211,6 +211,7 @@ public class MemberService {
      * @param updateMemberInfo - 업데이트정보
      */
     public void updateMember(Member updateMember, UpdateMember updateMemberInfo) {
+
     }
 
     /**
