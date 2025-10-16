@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.Member;
@@ -19,6 +20,7 @@ import whitekim.self_developing.service.ProblemService;
  * @author whitekim
  * 문제 풀이 시 해당 액션에 대한 이력 생성
  */
+@Component
 @Aspect
 @RequiredArgsConstructor
 @Slf4j
@@ -26,7 +28,7 @@ public class ProblemSolvingAspect {
     private final ProblemHistoryService historyService;
 
     @AfterReturning(
-            pointcut = "execution(* whitekim.self_developing.service..ProblemService+.markingProblem(..))",
+            pointcut = "execution(* whitekim.self_developing.service..ProblemService+.markingProblem(..)) && target(problemService)",
             returning = "solvingProblem"
     )
     public void solvedProblem(JoinPoint joinPoint, ProblemService problemService, MarkingProblem solvingProblem) {
@@ -46,5 +48,6 @@ public class ProblemSolvingAspect {
                 solvedProblem,
                 authMember
         ));
+
     }
 }
