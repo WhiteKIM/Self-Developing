@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import whitekim.self_developing.dto.response.MemberDetail;
 import whitekim.self_developing.model.enumerate.Permission;
+import whitekim.self_developing.model.relation.MemberFavoritePaper;
+import whitekim.self_developing.model.relation.MemberRecentPaper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,17 +22,15 @@ public class Member extends BaseEntity {
     private String password;
     private String email;
 
-    @OneToMany
-    @JoinColumn(name = "paper_id")
-    private List<Paper> favoriteList = new ArrayList<>();   // 즐겨찾기
+    @OneToMany(mappedBy = "member")
+    private List<MemberFavoritePaper> favoriteList = new ArrayList<>();   // 즐겨찾기
 
     @OneToMany
     @JoinColumn(name = "problem_id")
     private List<Problem> wrongList = new ArrayList<>();      // 오답리스트
 
-    @OneToMany
-    @JoinColumn(name = "paper_id")
-    private List<Paper> recentList = new ArrayList<>();     // 최근진행내역
+    @OneToMany(mappedBy = "member")
+    private List<MemberRecentPaper> recentList = new ArrayList<>();     // 최근진행내역
     
     @OneToMany
     @JoinColumn(name = "problem_history_id")
@@ -70,7 +70,7 @@ public class Member extends BaseEntity {
      * 즐겨찾기에 대상을 추가
      * @param paper - 추가할 문제집 정보
      */
-    public void addFavorite(Paper paper) {
+    public void addFavorite(MemberFavoritePaper paper) {
         if(!favoriteList.contains(paper)) {
             favoriteList.add(paper);
         }
@@ -96,8 +96,9 @@ public class Member extends BaseEntity {
      * 최근에 수행한 문제집을 추가
      * @param paper - 최근에 수행한 문제집 정보
      */
-    public void addRecentPaper(Paper paper) {
-        recentList.add(paper);
+    public void addRecentPaper(MemberRecentPaper paper) {
+        if(!recentList.contains(paper))
+            recentList.add(paper);
     }
 
     /**

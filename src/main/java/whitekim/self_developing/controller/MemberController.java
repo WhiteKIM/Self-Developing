@@ -95,7 +95,7 @@ public class MemberController {
         PrincipalMember principalMember =
                 (PrincipalMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<Paper> favoriteList = memberService.getMemberFavoriteList(principalMember.getId()).favoriteList();
+        List<Paper> favoriteList = memberService.getMemberFavoriteList(principalMember.getId());
 
         return ResponseEntity.ok(favoriteList);
     }
@@ -104,12 +104,12 @@ public class MemberController {
      * 로그인한 사용자의 최근 이력 조회
      * @return
      */
-    @GetMapping("/v1/recent")
+    @GetMapping("/v1/recent/list")
     public ResponseEntity<List<Paper>> getMemberRecentList() {
         PrincipalMember principalMember =
                 (PrincipalMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<Paper> favoriteList = memberService.getMemberRecentList(principalMember.getId()).recentList();
+        List<Paper> favoriteList = memberService.getMemberRecentList(principalMember.getId());
 
         return ResponseEntity.ok(favoriteList);
     }

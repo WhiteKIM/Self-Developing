@@ -17,7 +17,7 @@ public record MemberInfo(
         List<Paper> recentList,
         BigDecimal point
 ) {
-    public static MemberInfo from(Member member) {
+    public static MemberInfo from(Member member, List<Paper> favoriteList, List<Paper> recentList) {
         return new MemberInfo(
                 member.getUsername(),
                 member.getPassword(),
@@ -25,8 +25,8 @@ public record MemberInfo(
                 member.getPermission(),
                 member.getWrongPasswordCount(),
                 // Lazy 로딩 문제 방지를 위해 복사(List.of(...) or stream)
-                member.getFavoriteList() != null ? List.copyOf(member.getFavoriteList()) : List.of(),
-                member.getRecentList() != null ? List.copyOf(member.getRecentList()) : List.of(),
+                favoriteList,
+                recentList,
                 member.getPoint().getPointQuantity()
         );
     }
