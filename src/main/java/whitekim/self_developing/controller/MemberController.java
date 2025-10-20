@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import whitekim.self_developing.auth.PrincipalMember;
+import whitekim.self_developing.dto.request.MemberRegister;
 import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.dto.response.MemberInfo;
+import whitekim.self_developing.model.Log;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.service.MemberService;
@@ -40,9 +42,9 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<String> joinMember(@RequestBody Member member) {
+    public ResponseEntity<String> joinMember(@RequestBody MemberRegister joinMember) {
         try {
-            memberService.registerMember(member);
+            memberService.registerMember(joinMember);
         } catch (ConstraintViolationException e) {
             return ResponseEntity.status(401).body(null);
         }
@@ -112,5 +114,15 @@ public class MemberController {
         List<Paper> favoriteList = memberService.getMemberRecentList(principalMember.getId());
 
         return ResponseEntity.ok(favoriteList);
+    }
+
+    @GetMapping("/v1/point/history")
+    public ResponseEntity<List<Log>> getMemberPointHistoryList() {
+        PrincipalMember principalMember =
+                (PrincipalMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Log> memberPointHistory = memberService.getMemberPointHistory(principalMember.getId());
+
+        return ResponseEntity.ok(memberPointHistory);
     }
 }

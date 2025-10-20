@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import whitekim.self_developing.auth.PrincipalMember;
+import whitekim.self_developing.dto.request.MemberRegister;
 import whitekim.self_developing.dto.request.SubmitProblem;
 import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.dto.response.MemberInfo;
+import whitekim.self_developing.exception.AlreadyExistsException;
 import whitekim.self_developing.model.*;
 import whitekim.self_developing.model.relation.MemberFavoritePaper;
 import whitekim.self_developing.model.relation.MemberRecentPaper;
@@ -35,18 +37,24 @@ public class MemberService {
     private final PointService pointService;
     private final FavoriteRepository favoriteRepository;
     private final RecentRepository recentRepository;
+    private final LogRepository logRepository;
 
     /**
      * 사용자정보 최초 생성
-     * @param member
+     * @param joinMember
      * @throws ConstraintViolationException
      */
-    public void registerMember(Member member) throws ConstraintViolationException {
+    public void registerMember(MemberRegister joinMember) throws ConstraintViolationException {
+        log.info("[MemberService] : {}", joinMember.toString());
+
+        // 중복정보 체크
+        if(memberRepository.findByUsername(joinMember.username()).isPresent())
+            throw new AlreadyExistsException("이미 존재하는 사용자 정보입니다.");
+
+        Member member = MemberRegister.toEntity(joinMember);
+
         Point emptyPoint = pointService.createEmptyPoint();
         member.setPoint(emptyPoint);        // 빈 포인트와 관계 설정
-        
-        // 등록가능한 사용자인지 판단
-        memberRepository.save(member);
 
         // 비밀번호 암호화
         String rawPassword = member.getPassword();
@@ -221,8 +229,8 @@ public class MemberService {
 
     /**
      * 사용자 즐겨찾기 리스트 조회
-     * @param id
-     * @return
+     * @param id - 사용자 PK
+     * @return 사용자 즐겨찾기 이력
      */
     public List<Paper> getMemberFavoriteList(Long id) {
         Member member = memberRepository.findMemberWithFavoriteList(id).orElseThrow();
@@ -234,8 +242,8 @@ public class MemberService {
 
     /**
      * 사용자 최근내역 리스트 조회
-     * @param id
-     * @return
+     * @param id -사용자 PK
+     * @return 최근 문제집 내역
      */
     public List<Paper> getMemberRecentList(Long id) {
         Member member = memberRepository.findMemberWithRecentList(id).orElseThrow();
@@ -243,5 +251,16 @@ public class MemberService {
         List<Long> recentPaperIdList = member.getRecentList().stream().map(BaseEntity::getId).toList();
 
         return paperRepository.findAllById(recentPaperIdList);
+    }
+
+    /**
+     * 사용자 포인트 기록 조회
+     * @param id - 사용자PK
+     * @return - 로그내역
+     */
+    public List<Log> getMemberPointHistory(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow();
+
+        return member.getPoint().getLogList();
     }
 }

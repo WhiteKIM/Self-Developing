@@ -22,7 +22,8 @@ public class Point extends BaseEntity {
     @JoinColumn(name = "log_id")
     private List<Log> logList = new ArrayList<>();
 
-    public void addPoint(BigDecimal rewardPoint) {
+    public void addPoint(BigDecimal rewardPoint, Log log) {
         this.pointQuantity = pointQuantity.add(rewardPoint);
+        this.logList.add(log);
     }
 }

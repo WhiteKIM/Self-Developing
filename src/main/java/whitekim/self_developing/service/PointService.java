@@ -4,13 +4,16 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.model.Log;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Point;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.properties.PointProperties;
+import whitekim.self_developing.repository.LogRepository;
 import whitekim.self_developing.repository.PointRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -18,8 +21,8 @@ import java.math.BigDecimal;
 @Slf4j
 public class PointService {
     private final PointRepository pointRepository;
-
     private final PointProperties pointProperties;
+    private final LogRepository logRepository;
 
     /**
      * 포인트 생성 후 저장
@@ -54,7 +57,23 @@ public class PointService {
 
         log.info("[PointService] Rate : {}, Difficult : {} Reward Point : {}", pointRate, problem.getDifficulty(), rewardPoint);
 
-        memberPoint.addPoint(rewardPoint);
+        // 포인트 로그 생성
+        Log log = Log.builder()
+                .job("[PointLog]")
+                .method("earnPoint")
+                .message(
+                        String.format("%s : %s 사용자가 %d 문제를 해결하여 %s 포인트를 획득하였습니다.",
+                                LocalDateTime.now().toString(),
+                                member.getUsername(),
+                                problem.getId(),
+                                rewardPoint.toString()
+                        )
+                )
+                .build();
+
+        log = logRepository.save(log);
+
+        memberPoint.addPoint(rewardPoint, log);
 
         pointRepository.save(memberPoint);
     }

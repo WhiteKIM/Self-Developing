@@ -8,8 +8,6 @@ import whitekim.self_developing.dto.request.PageForm;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.model.Category;
-import whitekim.self_developing.model.Member;
-import whitekim.self_developing.model.enumerate.Permission;
 import whitekim.self_developing.service.*;
 
 import java.util.ArrayList;
@@ -31,21 +29,23 @@ public class TestConstruct {
     @PostConstruct
     void init() {
         // 사용자 회원가입 및 등록
-        Member member = Member.builder()
-                .username("test")
-                .password("test")
-                .email("test@test.com")
-                .build();
-
-        Member admin = Member.builder()
-                .username("admin")
-                .password("test")
-                .permission(Permission.ADMIN)
-                .email("test@test.com")
-                .build();
-
-        memberService.registerMember(member);
-        memberService.registerMember(admin);
+//        Member member = Member.builder()
+//                .username("test")
+//                .password("test")
+//                .email("test@test.com")
+//                .build();
+//
+//        Member admin = Member.builder()
+//                .username("admin")
+//                .password("test")
+//                .permission(Permission.ADMIN)
+//                .email("test@test.com")
+//                .build();
+//
+//
+//
+//        memberService.registerMember(member);
+//        memberService.registerMember(admin);
 
         // 카테고리 생성
         categoryService.saveCategory(new Category("test"));
