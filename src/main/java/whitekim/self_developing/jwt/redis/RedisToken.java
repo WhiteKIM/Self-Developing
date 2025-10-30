@@ -21,4 +21,7 @@ public class RedisToken {
     public void updateAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

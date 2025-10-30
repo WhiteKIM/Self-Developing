@@ -49,12 +49,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             // 리프레시 토큰이 유효하면 엑세스 토큰 재발행
             log.info("[Access Token] Token is expired");
             String accToken = jwtUtils.republishAccessToken(accessToken, response);
-            String username = jwtUtils.getUsernameByAccessToken(accessToken);
+            log.info("[Access Token] Access Token : {}", accToken);
+            String username = jwtUtils.getUsernameByToken(accToken);
             userDetails = userDetailsService.loadUserByUsername(username);
         } else {
             // 엑세스토큰 유효
             log.info("[Access Token] Success Get Authentication");
-            userDetails = userDetailsService.loadUserByUsername(jwtUtils.getUsernameByAccessToken(accessToken));
+            userDetails = userDetailsService.loadUserByUsername(jwtUtils.getUsernameByToken(accessToken));
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

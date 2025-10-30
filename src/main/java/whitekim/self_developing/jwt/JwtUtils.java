@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import whitekim.self_developing.exception.PermissionDeniedException;
+import whitekim.self_developing.exception.ExpiredTokenException;
 import whitekim.self_developing.jwt.redis.RedisToken;
 import whitekim.self_developing.jwt.redis.RedisTokenRepository;
 
@@ -60,6 +60,27 @@ public class JwtUtils {
     }
 
     /**
+     * 리프레시 만료되면 새로운 리프레시토큰 재발행
+     *
+     * @param refreshToken - 리프레시토큰
+     */
+    public String republishRefreshToken(String refreshToken) {
+        Optional<RedisToken> optionalRedisToken = redisTokenRepository.findByRefreshToken(refreshToken);
+        RedisToken token = null;
+
+        String username = getUsernameByToken(refreshToken);
+
+        token = optionalRedisToken.orElseGet(() -> new RedisToken(username, null, null));
+
+        // 토큰 재발행 후 업데이트
+        String newRefreshToken = publishRefreshToken(username);
+        token.updateRefreshToken(newRefreshToken);
+        redisTokenRepository.save(token);
+
+        return newRefreshToken;
+    }
+
+    /**
      * 엑세스토큰이 만료되면 새로운 엑세스토큰 재발행
      *
      * @param accessToken - 엑세스토큰
@@ -67,35 +88,36 @@ public class JwtUtils {
      */
     public String republishAccessToken(String accessToken, HttpServletResponse response) {
         Optional<RedisToken> optionalRedisToken = redisTokenRepository.findByAccessToken(accessToken);
+        RedisToken redisToken = null;
 
-        if(optionalRedisToken.isEmpty()) {
-            throw new PermissionDeniedException("잘못된 인증 요청입니다.");
-        }
+        String username = getUsernameByToken(accessToken);
 
-        RedisToken redisToken = optionalRedisToken.get();
+        redisToken = optionalRedisToken.orElseGet(() -> new RedisToken(username, null, null));
         String refreshToken = redisToken.getRefreshToken();
 
-        // 이전에 발행된 리프레시 토큰이 존재하고, 해당 토큰이 유효한 경우
-        if(!verifyRefreshToken(refreshToken)) {
-            throw new RuntimeException("만료된 인증정보입니다.");
-        }
+        log.info("[JwtUtils] : {}, {}", refreshToken, accessToken);
 
-        String username = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(refreshToken)
-                .getPayload()
-                .getSubject();
+        if(refreshToken == null) {
+            // 토큰 최초 발행 시작
+            refreshToken = publishRefreshToken(username);
+        } else if(!verifyRefreshToken(refreshToken)) {
+            // 이전에 발행된 리프레시 토큰이 존재하지만 만료된 경우
+            redisTokenRepository.deleteById(username);
+            throw new ExpiredTokenException("만료된 로그인 정보입니다.");
+        }
 
         // 토큰 재발행 후 업데이트
         String newAccessToken = publishAccessToken(username);
         redisToken.updateAccessToken(newAccessToken);
+        redisToken.updateRefreshToken(refreshToken);
         redisTokenRepository.save(redisToken);
+
+        log.info("[JwtUtils] : Republish Token {}, {}", refreshToken, accessToken);
 
         response.setHeader("Access-Token", newAccessToken);
 
-        // 해당 사용자명 반환
-        return username;
+        // 해당 엑세스토큰 반환
+        return newAccessToken;
     }
 
     /**
@@ -150,37 +172,54 @@ public class JwtUtils {
         }
     }
 
-
-
     /**
      * 리프레시 토큰 검증
      */
     public boolean verifyRefreshToken(String refreshToken) {
-        Jws<Claims> claimsJws = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(refreshToken);
+        try {
+            Jws<Claims> claimsJws = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(refreshToken);
 
-        // 만료된 토큰
-        return claimsJws.getPayload().getExpiration().before(new Date());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+//
+//        Jws<Claims> claimsJws = Jwts.parser()
+//                .verifyWith(secretKey)
+//                .build()
+//                .parseSignedClaims(refreshToken);
+//
+//        // 만료된 토큰
+//        return claimsJws.getPayload().getExpiration().before(new Date());
     }
 
     /**
-     * 엑세스 토큰에 대한 사용자 정보 조회
-     * @param accessToken - 인증된 엑세스 토큰
+     * 토큰에 대한 사용자 정보 조회
+     * @param token - 인증된 엑세스 토큰
      * @return - 토큰 소유자 정보
      */
-    public String getUsernameByAccessToken(String accessToken) {
-        if(accessToken == null || accessToken.isBlank()) {
+    public String getUsernameByToken(String token) {
+        if(token == null || token.isBlank()) {
             throw new RuntimeException();
         }
 
-        return Jwts.
-                parser().
-                verifyWith(secretKey).
-                build().
-                parseSignedClaims(accessToken).
-                getPayload().
-                getSubject();
+        try {
+            return Jwts.
+                    parser().
+                    verifyWith(secretKey).
+                    build().
+                    parseSignedClaims(token).
+                    getPayload().
+                    getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        } catch (Exception e) {
+            log.info("[JwtUtils] Unknown Exception : {}", e.toString());
+        }
+
+        return null;
     }
 }

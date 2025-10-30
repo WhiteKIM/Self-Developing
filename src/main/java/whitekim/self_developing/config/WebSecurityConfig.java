@@ -43,8 +43,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole(String.valueOf(Permission.ADMIN))
-                        .requestMatchers("/script/**").permitAll()
-                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/script/**").permitAll()      // 스크립트
+                        .requestMatchers("/css/**").permitAll()         // CSS
+                        .requestMatchers("/api/member/join").permitAll()    // 회원가입
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
