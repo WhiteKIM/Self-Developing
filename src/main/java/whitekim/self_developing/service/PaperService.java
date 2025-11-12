@@ -2,6 +2,7 @@ package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.PaperForm;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class PaperService {
     private final PaperRepository paperRepository;
@@ -63,6 +65,8 @@ public class PaperService {
 
         Paper paper = optPaper.get();
 
+        log.info("[PaperService] ProblemList : {}", problemList.size());
+
         for(int i = 0; i < problemList.size(); i++) {
             ProblemForm form = problemList.get(i);
 
@@ -77,6 +81,8 @@ public class PaperService {
                 image = imageService.saveImage(uploadFiles.get(i));
 
             problem.attachImage(image);
+
+            log.info("[PaperService] Problem : {}", problem);
 
             switch (type) {
                 case "CHOICE":
