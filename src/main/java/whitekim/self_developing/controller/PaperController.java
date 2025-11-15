@@ -1,5 +1,8 @@
 package whitekim.self_developing.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +41,11 @@ public class PaperController {
     @PostMapping("/v1/registerProblem")
     public ResponseEntity<String> registerProblemList(
             @RequestParam("paperId") Long paperId,
-            @RequestPart("problemList") List<ProblemForm> problemList,
+            @RequestPart("problemList") String problemListJson,
             @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> uploadFiles
-    ) {
-        log.info("UploadFiles : {}", uploadFiles);
+    ) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        List<ProblemForm> problemList = om.readValue(problemListJson, new TypeReference<List<ProblemForm>>() {});
 
         paperService.addProblem(paperId, problemList, uploadFiles);
 
