@@ -39,11 +39,13 @@ public class PaperService {
      * 시험지를 등록합니다.
      * @param paper
      */
-    public void registerPaper(Long pageId, PaperForm paper) {
+    public Long registerPaper(Long pageId, PaperForm paper) {
         Page page = pageRepository.findById(pageId).orElseThrow();
         Paper savePage = paperRepository.save(new Paper(paper));
 
         page.addPaper(savePage);
+
+        return savePage.getId();
     }
 
     public List<Paper> getPaperList(Long pageId) {

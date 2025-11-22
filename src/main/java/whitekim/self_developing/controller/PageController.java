@@ -9,13 +9,10 @@ import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.response.DetailPageForm;
 import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.Page;
-import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.service.PageService;
 import whitekim.self_developing.service.PaperService;
-import whitekim.self_developing.service.ProblemService;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,9 +49,9 @@ public class PageController {
     }
 
     @PostMapping("/v1/paper/register")
-    public ResponseEntity<String> registerPaper(@RequestParam(name = "pageId") Long pageId, @RequestBody PaperForm paperForm) {
-        paperService.registerPaper(pageId, paperForm);
+    public ResponseEntity<Long> registerPaper(@RequestParam(name = "pageId") Long pageId, @RequestBody PaperForm paperForm) {
+        Long paperId = paperService.registerPaper(pageId, paperForm);
 
-        return ResponseEntity.ok("문제집을 등록하였습니다.");
+        return ResponseEntity.ok(paperId);
     }
 }

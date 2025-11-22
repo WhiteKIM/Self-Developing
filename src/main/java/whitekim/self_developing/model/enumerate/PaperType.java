@@ -4,5 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum PaperType {
-    TEST, PREV, MOCK
+    TEST, // 기출
+    PREV, // 모의고사
+    MOCK  // 간단퀴즈
 }
