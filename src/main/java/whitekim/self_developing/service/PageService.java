@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import whitekim.self_developing.dto.request.PageForm;
 import whitekim.self_developing.dto.response.DetailPageForm;
-import whitekim.self_developing.exception.NotExistDataTypeException;
 import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.Category;
 import whitekim.self_developing.model.Certification;
@@ -27,17 +26,23 @@ public class PageService {
     private final CertRepository certRepository;
 
     public void registerPage(PageForm pageForm) {
-        Optional<Category> optCategory = categoryRepository.findByCategoryName(pageForm.getCategory());
-        Optional<Certification> optCert = certRepository.findByCertName(pageForm.getCertification());
+        Optional<Category> category = categoryRepository.findByCategoryName(pageForm.getCategory());
+        Optional<Certification> cert = certRepository.findByCertName(pageForm.getCertification());
 
-        if(optCategory.isEmpty() || optCert.isEmpty()) {
-            throw new NotExistDataTypeException("존재하지 않는 항목입니다.");
+        if(category.isEmpty()) {
+//            throw new NotExistDataTypeException("존재하지 않는 항목입니다.");
+            category = Optional.of(categoryRepository.save(new Category(pageForm.getCategory())));
+        }
+
+
+        if(cert.isEmpty()) {
+            cert = Optional.of(certRepository.save(Certification.builder().certName(pageForm.getCertification()).build()));
         }
 
         Page page = Page.builder()
                 .pageType(PageType.valueOf(pageForm.getPageType()))
-                .certification(optCert.get())
-                .category(optCategory.get())
+                .certification(cert.get())
+                .category(category.get())
                 .build();
 
         pageRepository.save(page);

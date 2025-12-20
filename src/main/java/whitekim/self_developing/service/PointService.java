@@ -43,6 +43,12 @@ public class PointService {
     public void earnPoint(Member member, Problem problem) {
         Point memberPoint = member.getPoint();
 
+        if(memberPoint == null) {
+            Point newPoint = pointRepository.save(new Point());
+            member.setPoint(newPoint);
+            memberPoint = newPoint;
+        }
+
         // 다른 엔티티에 트랜잭션이 아닌곳에 접근하면 안돼요
         //this.logList.add(new Log("Point", "create", "pay a Point"));
 

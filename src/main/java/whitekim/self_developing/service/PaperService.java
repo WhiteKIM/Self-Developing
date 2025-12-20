@@ -40,6 +40,8 @@ public class PaperService {
      * @param paper
      */
     public Long registerPaper(Long pageId, PaperForm paper) {
+        log.info("[PaperService] PageId : {}", pageId);
+
         Page page = pageRepository.findById(pageId).orElseThrow();
         Paper savePage = paperRepository.save(new Paper(paper));
 
