@@ -50,6 +50,21 @@ public class ProblemServiceFactory {
     }
 
     /**
+     * 주어진 문제 타입에 맞는 적절한 서비스 클래스를 반환
+     * @param type - 문제 클래스
+     * @return - 구체 문제 서비스
+     */
+    public ProblemService<? extends Problem> createService(String type) {
+        ProblemService<? extends Problem> problemService = problemServiceMap.get(ProblemRepoType.valueOf(type).getClazz());
+
+        if(problemService == null) {
+            throw new RuntimeException("존재하지 않는 타입 정보입니다.");
+        }
+
+        return problemService;
+    }
+
+    /**
      * 현재 팩토리에 등록된 전체 서비스 클래스에 대한 리스트를 제공
      * @return - 구체 문제서비스 클래스
      */

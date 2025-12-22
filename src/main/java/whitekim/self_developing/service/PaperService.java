@@ -60,6 +60,12 @@ public class PaperService {
         return optPage.get().getPaperList();
     }
 
+    /**
+     * 문제집에 문제 추가
+     * @param paperId
+     * @param problemList
+     * @param uploadFiles
+     */
     public void addProblem(Long paperId, List<ProblemForm> problemList, List<MultipartFile> uploadFiles) {
         Optional<Paper> optPaper = paperRepository.findById(paperId);
 
@@ -98,6 +104,50 @@ public class PaperService {
                     EssayProblemRepository essayRepo = (EssayProblemRepository) problemRepository;
                     EssayProblem essayProblem = essayRepo.save((EssayProblem) problem);
                     paper.addProblem(essayProblem);
+                    break;
+                default:
+                    throw new IllegalArgumentException("존재하지 않거나 잘못된 타입이 입력되었습니다.");
+            }
+        }
+    }
+
+    /**
+     * 문제집 내 문제 수정
+     * @param paperId - 문제집 ID
+     * @param problemList - 문제 정보
+     * @param uploadFiles - 업로드된 이미지
+     */
+    public void updateProblem(Long paperId, List<ProblemForm> problemList, List<MultipartFile> uploadFiles) {
+        Optional<Paper> optPaper = paperRepository.findById(paperId);
+
+        if(optPaper.isEmpty()) {
+            throw new NotFoundDataException("존재하지 않는 항목입니다.");
+        }
+
+        Paper paper = optPaper.get();
+
+        for(int i = 0; i < problemList.size(); i++) {
+            ProblemForm form = problemList.get(i);
+
+            String type = form.getProblemType();
+
+            // 해당 문제를 찾아서 수정 처리를 해주어야 함
+            ProblemService<? extends Problem> problemService = problemServiceFactory.createService(form.getProblemType());
+
+            Image image = null;
+
+            if(uploadFiles != null  && !uploadFiles.get(i).isEmpty())
+                image = imageService.saveImage(uploadFiles.get(i));
+
+
+            switch (type) {
+                case "CHOICE":
+                    ChoiceProblemService choiceRepo = (ChoiceProblemService) problemService;
+                    choiceRepo.updateProblem(form, image);
+                    break;
+                case "ESSAY":
+                    EssayProblemService essayRepo = (EssayProblemService) problemService;
+                    essayRepo.updateProblem(form, image);
                     break;
                 default:
                     throw new IllegalArgumentException("존재하지 않거나 잘못된 타입이 입력되었습니다.");

@@ -1,13 +1,9 @@
 package whitekim.self_developing.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author whitekim
@@ -18,12 +14,7 @@ import java.util.List;
 public class Point extends BaseEntity {
     private BigDecimal pointQuantity = BigDecimal.ZERO;
 
-    @OneToMany
-    @JoinColumn(name = "log_id")
-    private List<Log> logList = new ArrayList<>();
-
-    public void addPoint(BigDecimal rewardPoint, Log log) {
+    public void addPoint(BigDecimal rewardPoint) {
         this.pointQuantity = pointQuantity.add(rewardPoint);
-        this.logList.add(log);
     }
 }

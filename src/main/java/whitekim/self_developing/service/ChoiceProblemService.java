@@ -2,9 +2,12 @@ package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.ChoiceProblem;
+import whitekim.self_developing.model.Image;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.ChoiceProblemRepository;
 import whitekim.self_developing.repository.PaperRepository;
@@ -37,6 +40,29 @@ public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
     @Override
     public void updateProblem(ChoiceProblem problem) {
         super.updateProblem(problem);
+    }
+
+    @Override
+    public void updateProblem(ProblemForm form, Image image) {
+        String status = form.getStatus();
+
+        if(status.equals("U")) {
+            Optional<ChoiceProblem> optProblem = problemRepository.findById(form.getId());
+
+            if(optProblem.isEmpty())
+                throw new NotFoundDataException("존재하지 않는 항목입니다.");
+
+            ChoiceProblem choiceProblem = optProblem.get();
+            choiceProblem.update(form.toChoice());
+
+            if(form.getImageFileName().isEmpty() && image == null) {
+                choiceProblem.attachImage(null);
+            } else if(image != null) {
+                choiceProblem.attachImage(image);
+            }
+        } else {
+            super.deleteProblem(form.getId());
+        }
     }
 
     @Override

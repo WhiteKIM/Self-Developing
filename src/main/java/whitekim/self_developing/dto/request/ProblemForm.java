@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import whitekim.self_developing.model.ChoiceProblem;
+import whitekim.self_developing.model.EssayProblem;
 import whitekim.self_developing.model.Problem;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProblemForm {
+    private Long id;                // 문제 ID - 수정 시 필요
     @NotBlank
     private String problemType;     // 문제 타입
     @NotBlank
@@ -31,6 +33,8 @@ public class ProblemForm {
 
     private String categoryName;    // 카테고리명
 
+    private String imageFileName;   // 이미지파일명
+
     @NotBlank
     private List<String> answer;    // 정답
     @NotBlank
@@ -40,11 +44,13 @@ public class ProblemForm {
     @Range(min = 0, max = 5)
     private int difficulty;         // 난이도
 
+    private String status;          // 상태여부(U, D)
+
     public Problem toChoice() {
         return new ChoiceProblem(this);
     }
 
     public Problem toEssay() {
-        return new ChoiceProblem(this);
+        return new EssayProblem(this);
     }
 }

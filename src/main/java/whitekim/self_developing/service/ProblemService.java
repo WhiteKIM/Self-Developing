@@ -4,9 +4,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotExistProblemException;
 import whitekim.self_developing.model.Certification;
+import whitekim.self_developing.model.Image;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.repository.CertRepository;
@@ -107,6 +109,13 @@ public abstract class ProblemService<T extends Problem> {
         T t = optProblem.get();
         t.update(problem);
     }
+
+    /**
+     * 단건 문제 수정
+     * @param form - 수정할 문제 정보
+     * @param image - 첨부이미지
+     */
+    public abstract void updateProblem(ProblemForm form, Image image);
 
     /**
      * 다건 문제 수정

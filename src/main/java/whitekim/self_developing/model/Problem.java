@@ -78,9 +78,7 @@ public abstract class Problem extends BaseEntity {
         this.round = updateProblem.getRound();
         this.subject = updateProblem.getSubject();
         this.problem = updateProblem.getProblem();
-        this.image = updateProblem.getImage();
         this.comment = updateProblem.getComment();
-
     }
 
     /**

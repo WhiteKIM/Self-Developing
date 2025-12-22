@@ -63,6 +63,10 @@ public class PointService {
 
         log.info("[PointService] Rate : {}, Difficult : {} Reward Point : {}", pointRate, problem.getDifficulty(), rewardPoint);
 
+        memberPoint.addPoint(rewardPoint);
+
+        Point savePoint = pointRepository.save(memberPoint);
+
         // 포인트 로그 생성
         Log log = Log.builder()
                 .job("[PointLog]")
@@ -75,13 +79,10 @@ public class PointService {
                                 rewardPoint.toString()
                         )
                 )
+                .targetId(savePoint.getId())
                 .build();
 
-        log = logRepository.save(log);
-
-        memberPoint.addPoint(rewardPoint, log);
-
-        pointRepository.save(memberPoint);
+        logRepository.save(log);
     }
 
     /**
