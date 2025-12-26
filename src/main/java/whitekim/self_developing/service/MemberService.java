@@ -259,8 +259,8 @@ public class MemberService {
      * @return - 로그내역
      */
     public List<Log> getMemberPointHistory(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow();
+//        Member member = memberRepository.findById(id).orElseThrow();
 
-        return member.getPoint().getLogList();
+        return null;
     }
 }

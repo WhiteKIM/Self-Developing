@@ -19,13 +19,13 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ChoiceProblem extends Problem {
-    private ProblemType type = ProblemType.CHOICE;
+    private ProblemType problemType = ProblemType.CHOICE;
     private List<String> suggest = new ArrayList<>();
     private List<String> answer = new ArrayList<>();//중복답 처리가 필요한 경우도 있을 수 있음
 
     public ChoiceProblem(ProblemForm form) {
         super(form);
-        this.type = ProblemType.CHOICE;
+        this.problemType = ProblemType.CHOICE;
         this.suggest = form.getSuggest();
         this.answer = form.getAnswer();
     }

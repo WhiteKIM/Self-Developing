@@ -16,12 +16,12 @@ import whitekim.self_developing.model.enumerate.ProblemType;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class EssayProblem extends Problem{
-    private ProblemType type;   // 문제 타입
+    private ProblemType problemType;   // 문제 타입
     private String answer;      //정답
 
     public EssayProblem(ProblemForm form) {
         super(form);
-        this.type = ProblemType.ESSAY;
+        this.problemType = ProblemType.ESSAY;
         this.answer = form.getAnswer().getFirst();
     }
 
