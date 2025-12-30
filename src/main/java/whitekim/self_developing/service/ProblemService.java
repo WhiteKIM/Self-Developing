@@ -114,8 +114,9 @@ public abstract class ProblemService<T extends Problem> {
      * 단건 문제 수정
      * @param form - 수정할 문제 정보
      * @param image - 첨부이미지
+     * @param paperId - 해당 문제집 ID
      */
-    public abstract void updateProblem(ProblemForm form, Image image);
+    public abstract void updateProblem(ProblemForm form, Image image, Long paperId);
 
     /**
      * 다건 문제 수정

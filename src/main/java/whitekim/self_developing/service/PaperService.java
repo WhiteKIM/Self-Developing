@@ -143,11 +143,11 @@ public class PaperService {
             switch (type) {
                 case "CHOICE":
                     ChoiceProblemService choiceRepo = (ChoiceProblemService) problemService;
-                    choiceRepo.updateProblem(form, image);
+                    choiceRepo.updateProblem(form, image, paperId);
                     break;
                 case "ESSAY":
                     EssayProblemService essayRepo = (EssayProblemService) problemService;
-                    essayRepo.updateProblem(form, image);
+                    essayRepo.updateProblem(form, image, paperId);
                     break;
                 default:
                     throw new IllegalArgumentException("존재하지 않거나 잘못된 타입이 입력되었습니다.");

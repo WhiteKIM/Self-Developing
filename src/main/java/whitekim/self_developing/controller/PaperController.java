@@ -52,6 +52,20 @@ public class PaperController {
         return ResponseEntity.ok("문제를 등록하였습니다.");
     }
 
+    @PostMapping("/v1/updateProblem")
+    public ResponseEntity<String> updateProblemList(
+            @RequestParam("paperId") Long paperId,
+            @RequestPart("problemList") String problemListJson,
+            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> uploadFiles
+    ) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        List<ProblemForm> problemList = om.readValue(problemListJson, new TypeReference<List<ProblemForm>>() {});
+
+        paperService.updateProblem(paperId, problemList, uploadFiles);
+
+        return ResponseEntity.ok("문제를 등록하였습니다.");
+    }
+
     /**
      * 문제지 답안 제출
      * @param paperId - 해당 문제지 정보

@@ -10,6 +10,8 @@ import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.enumerate.ProblemType;
 
+import java.util.List;
+
 @Entity
 @Getter
 @DiscriminatorValue("Essay")
@@ -17,12 +19,12 @@ import whitekim.self_developing.model.enumerate.ProblemType;
 @AllArgsConstructor
 public class EssayProblem extends Problem{
     private ProblemType problemType;   // 문제 타입
-    private String answer;      //정답
+    private List<String> answer;      //정답
 
     public EssayProblem(ProblemForm form) {
         super(form);
         this.problemType = ProblemType.ESSAY;
-        this.answer = form.getAnswer().getFirst();
+        this.answer = form.getAnswer();
     }
 
     @Override
@@ -41,9 +43,9 @@ public class EssayProblem extends Problem{
     @Override
     public MarkingProblem mark(String submitAnswer) {
         if(answer.equals(submitAnswer)) {
-            return new MarkingProblem(super.getId(), true, super.getScore(),  ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+            return new MarkingProblem(super.getId(), true, super.getScore(),  ProblemType.ESSAY.toString(), submitAnswer, answer.getFirst(), getComment());
         } else {
-            return new MarkingProblem(super.getId(),  false, 0, ProblemType.ESSAY.toString(), submitAnswer, answer, getComment());
+            return new MarkingProblem(super.getId(),  false, 0, ProblemType.ESSAY.toString(), submitAnswer, answer.getFirst(), getComment());
         }
     }
 }

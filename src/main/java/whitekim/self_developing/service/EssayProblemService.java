@@ -5,12 +5,11 @@ import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotFoundDataException;
-import whitekim.self_developing.model.Certification;
-import whitekim.self_developing.model.EssayProblem;
-import whitekim.self_developing.model.Image;
+import whitekim.self_developing.model.*;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.EssayProblemRepository;
 import whitekim.self_developing.repository.PaperRepository;
+import whitekim.self_developing.service.factory.problem.ProblemFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +17,17 @@ import java.util.Optional;
 @Service
 @Transactional
 public class EssayProblemService extends ProblemService<EssayProblem> {
-    public EssayProblemService(EssayProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository, VoteService voteService) {
+    private final ProblemFactory problemFactory;
+
+    public EssayProblemService(
+            EssayProblemRepository problemRepository,
+            CertRepository certRepository,
+            PaperRepository paperRepository,
+            VoteService voteService,
+            ProblemFactory problemFactory
+    ) {
         super(problemRepository, certRepository, paperRepository, voteService);
+        this.problemFactory = problemFactory;
     }
 
     @Override
@@ -43,10 +51,11 @@ public class EssayProblemService extends ProblemService<EssayProblem> {
     }
 
     @Override
-    public void updateProblem(ProblemForm form, Image image) {
+    public void updateProblem(ProblemForm form, Image image, Long paperId) {
         String status = form.getStatus();
 
         if(status.equals("U")) {
+            // 문제 상태가 수정인 경우
             Optional<EssayProblem> optProblem = problemRepository.findById(form.getId());
 
             if(optProblem.isEmpty())
@@ -55,14 +64,25 @@ public class EssayProblemService extends ProblemService<EssayProblem> {
             EssayProblem essayProblem = optProblem.get();
             essayProblem.update(form.toEssay());
 
-            if(form.getImageFileName().isEmpty() && image == null) {
+            if((form.getImageFileName() == null || form.getImageFileName().isEmpty()) && image == null) {
                 essayProblem.attachImage(null);
             } else if(image != null) {
                 essayProblem.attachImage(image);
             }
 
-        } else {
+        } else if(status.equals("D")){
+            // 문제 상태가 삭제인 경우
             super.deleteProblem(form.getId());
+
+            Paper paper = paperRepository.findById(paperId).orElseThrow();
+            paper.deleteProblem(form.getId());
+        } else {
+            // 새로운 문제 추가
+            Problem problem = problemFactory.createProblem(form);
+            EssayProblem saveProblem = problemRepository.save((EssayProblem) problem);
+
+            Paper paper = paperRepository.findById(paperId).orElseThrow();
+            paper.addProblem(saveProblem);
         }
     }
 

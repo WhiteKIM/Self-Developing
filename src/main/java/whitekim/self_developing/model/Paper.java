@@ -60,4 +60,8 @@ public class Paper extends BaseEntity {
     public void addVote(Vote vote) {
         this.voteList.add(vote);
     }
+
+    public void deleteProblem(Long problemId) {
+        problemList.removeIf(problem -> problemId.equals(problem.getId()));
+    }
 }

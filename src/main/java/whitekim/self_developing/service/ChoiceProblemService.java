@@ -5,12 +5,11 @@ import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotFoundDataException;
-import whitekim.self_developing.model.Certification;
-import whitekim.self_developing.model.ChoiceProblem;
-import whitekim.self_developing.model.Image;
+import whitekim.self_developing.model.*;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.ChoiceProblemRepository;
 import whitekim.self_developing.repository.PaperRepository;
+import whitekim.self_developing.service.factory.problem.ProblemFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +17,17 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
-    public ChoiceProblemService(ChoiceProblemRepository problemRepository, CertRepository certRepository, PaperRepository paperRepository, VoteService voteService) {
+    private final ProblemFactory problemFactory;
+
+    public ChoiceProblemService(
+            ChoiceProblemRepository problemRepository,
+            CertRepository certRepository,
+            PaperRepository paperRepository,
+            VoteService voteService,
+            ProblemFactory problemFactory
+    ) {
         super(problemRepository, certRepository, paperRepository, voteService);
+        this.problemFactory = problemFactory;
     }
 
     @Override
@@ -43,10 +51,11 @@ public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
     }
 
     @Override
-    public void updateProblem(ProblemForm form, Image image) {
+    public void updateProblem(ProblemForm form, Image image, Long paperId) {
         String status = form.getStatus();
 
         if(status.equals("U")) {
+            // 해당 문제가 수정상태인 경우
             Optional<ChoiceProblem> optProblem = problemRepository.findById(form.getId());
 
             if(optProblem.isEmpty())
@@ -55,13 +64,24 @@ public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
             ChoiceProblem choiceProblem = optProblem.get();
             choiceProblem.update(form.toChoice());
 
-            if(form.getImageFileName().isEmpty() && image == null) {
+            if((form.getImageFileName() == null || form.getImageFileName().isEmpty()) && image == null) {
                 choiceProblem.attachImage(null);
             } else if(image != null) {
                 choiceProblem.attachImage(image);
             }
-        } else {
+        } else if(status.equals("D")){
+            // 해당 문제가 삭제인 경우
             super.deleteProblem(form.getId());
+
+            Paper paper = paperRepository.findById(paperId).orElseThrow();
+            paper.deleteProblem(form.getId());
+        } else {
+            // 새로운 문제 추가
+            Problem problem = problemFactory.createProblem(form);
+            ChoiceProblem saveProblem = problemRepository.save((ChoiceProblem) problem);
+
+            Paper paper = paperRepository.findById(paperId).orElseThrow();
+            paper.addProblem(saveProblem);
         }
     }
 
