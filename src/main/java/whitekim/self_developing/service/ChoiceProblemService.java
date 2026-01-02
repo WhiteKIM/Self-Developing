@@ -64,7 +64,7 @@ public class ChoiceProblemService extends ProblemService<ChoiceProblem> {
             ChoiceProblem choiceProblem = optProblem.get();
             choiceProblem.update(form.toChoice());
 
-            if((form.getImageFileName() == null || form.getImageFileName().isEmpty()) && image == null) {
+            if(choiceProblem.getImage() == null && image == null) {
                 choiceProblem.attachImage(null);
             } else if(image != null) {
                 choiceProblem.attachImage(image);

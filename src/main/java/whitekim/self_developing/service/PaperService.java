@@ -68,6 +68,7 @@ public class PaperService {
      */
     public void addProblem(Long paperId, List<ProblemForm> problemList, List<MultipartFile> uploadFiles) {
         Optional<Paper> optPaper = paperRepository.findById(paperId);
+        int imageIndex = 0;
 
         if(optPaper.isEmpty()) {
             throw new NotFoundDataException("존재하지 않는 항목입니다.");
@@ -77,9 +78,7 @@ public class PaperService {
 
         log.info("[PaperService] ProblemList : {}", problemList.size());
 
-        for(int i = 0; i < problemList.size(); i++) {
-            ProblemForm form = problemList.get(i);
-
+        for (ProblemForm form : problemList) {
             String type = form.getProblemType();
             // 적절한 타입으로 생성해서 넣어주어야 함
             Problem problem = problemFactory.createProblem(form);
@@ -87,8 +86,12 @@ public class PaperService {
 
             Image image = null;
 
-            if(uploadFiles != null  && !uploadFiles.get(i).isEmpty())
-                image = imageService.saveImage(uploadFiles.get(i));
+             /*
+              이미지 추가/변경 처리
+              추가된 이미지 정보가 있다면 가져온 후 인덱스 증가
+             */
+            if (form.getImageMetaInfo().isHasImage())
+                image = imageService.saveImage(uploadFiles.get(imageIndex++));
 
             problem.attachImage(image);
 
@@ -119,16 +122,15 @@ public class PaperService {
      */
     public void updateProblem(Long paperId, List<ProblemForm> problemList, List<MultipartFile> uploadFiles) {
         Optional<Paper> optPaper = paperRepository.findById(paperId);
+        int imageIndex = 0;
 
         if(optPaper.isEmpty()) {
             throw new NotFoundDataException("존재하지 않는 항목입니다.");
         }
 
-        Paper paper = optPaper.get();
+        log.info("[PaperService] UploadImage : {}", uploadFiles.stream().toString());
 
-        for(int i = 0; i < problemList.size(); i++) {
-            ProblemForm form = problemList.get(i);
-
+        for (ProblemForm form : problemList) {
             String type = form.getProblemType();
 
             // 해당 문제를 찾아서 수정 처리를 해주어야 함
@@ -136,9 +138,12 @@ public class PaperService {
 
             Image image = null;
 
-            if(uploadFiles != null  && !uploadFiles.get(i).isEmpty())
-                image = imageService.saveImage(uploadFiles.get(i));
-
+            /*
+              이미지 추가/변경 처리
+              추가된 이미지 정보가 있다면 가져온 후 인덱스 증가
+             */
+            if (form.getImageMetaInfo().isHasImage())
+                image = imageService.saveImage(uploadFiles.get(imageIndex++));
 
             switch (type) {
                 case "CHOICE":

@@ -1,6 +1,7 @@
 package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 public class EssayProblemService extends ProblemService<EssayProblem> {
     private final ProblemFactory problemFactory;
 
@@ -52,6 +54,8 @@ public class EssayProblemService extends ProblemService<EssayProblem> {
 
     @Override
     public void updateProblem(ProblemForm form, Image image, Long paperId) {
+        log.info("[ProblemService] Image info : {}", image);
+
         String status = form.getStatus();
 
         if(status.equals("U")) {
@@ -64,7 +68,7 @@ public class EssayProblemService extends ProblemService<EssayProblem> {
             EssayProblem essayProblem = optProblem.get();
             essayProblem.update(form.toEssay());
 
-            if((form.getImageFileName() == null || form.getImageFileName().isEmpty()) && image == null) {
+            if(essayProblem.getImage() == null && image == null) {
                 essayProblem.attachImage(null);
             } else if(image != null) {
                 essayProblem.attachImage(image);
@@ -80,6 +84,12 @@ public class EssayProblemService extends ProblemService<EssayProblem> {
             // 새로운 문제 추가
             Problem problem = problemFactory.createProblem(form);
             EssayProblem saveProblem = problemRepository.save((EssayProblem) problem);
+
+            if((form.getImageFileName() == null || form.getImageFileName().isEmpty()) && image == null) {
+                saveProblem.attachImage(null);
+            } else if(image != null) {
+                saveProblem.attachImage(image);
+            }
 
             Paper paper = paperRepository.findById(paperId).orElseThrow();
             paper.addProblem(saveProblem);

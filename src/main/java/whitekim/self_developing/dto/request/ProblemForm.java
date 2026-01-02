@@ -47,6 +47,8 @@ public class ProblemForm {
     private int difficulty;         // 난이도
 
     private String status;          // 상태여부(U, D)
+    
+    private ImageMetaInfo imageMetaInfo;
 
     public Problem toChoice() {
         return new ChoiceProblem(this);
@@ -54,5 +56,17 @@ public class ProblemForm {
 
     public Problem toEssay() {
         return new EssayProblem(this);
+    }
+
+    /**
+     * 이미지 메타정보 내부클래스
+     * 이미지 추가, 삭제 정보를 반영
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ImageMetaInfo {
+        private boolean hasImage;
+        private boolean delete;
     }
 }

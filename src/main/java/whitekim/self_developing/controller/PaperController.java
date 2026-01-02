@@ -61,6 +61,8 @@ public class PaperController {
         ObjectMapper om = new ObjectMapper();
         List<ProblemForm> problemList = om.readValue(problemListJson, new TypeReference<List<ProblemForm>>() {});
 
+        log.info("[PaperController] UploadFile : {}", uploadFiles);
+
         paperService.updateProblem(paperId, problemList, uploadFiles);
 
         return ResponseEntity.ok("문제를 등록하였습니다.");
