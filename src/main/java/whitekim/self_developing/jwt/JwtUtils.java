@@ -22,7 +22,6 @@ import java.util.Optional;
 @Slf4j
 public class JwtUtils {
     private final SecretKey secretKey; // 시크릿 키
-    private final String key;
     private final Long refreshExpirationTime; // 리프레시토큰 만료시간
     private final Long accessExpirationTime; // 엑세스토큰 만료시간
     private final RedisTokenRepository redisTokenRepository;
@@ -30,7 +29,6 @@ public class JwtUtils {
     public JwtUtils(@Value("${secret.key}") String key, @Value("${token.refresh-token.expiration}") Long refreshExpirationTime, @Value("${token.access-token.expiration}") Long accessExpirationTime, RedisTokenRepository redisTokenRepository) {
         this.refreshExpirationTime = refreshExpirationTime;
         this.accessExpirationTime = accessExpirationTime;
-        this.key = key;
         this.secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
         this.redisTokenRepository = redisTokenRepository;
     }
@@ -57,27 +55,6 @@ public class JwtUtils {
                 .parseSignedClaims(accessToken)
                 .getPayload()
                 .getSubject();
-    }
-
-    /**
-     * 리프레시 만료되면 새로운 리프레시토큰 재발행
-     *
-     * @param refreshToken - 리프레시토큰
-     */
-    public String republishRefreshToken(String refreshToken) {
-        Optional<RedisToken> optionalRedisToken = redisTokenRepository.findByRefreshToken(refreshToken);
-        RedisToken token = null;
-
-        String username = getUsernameByToken(refreshToken);
-
-        token = optionalRedisToken.orElseGet(() -> new RedisToken(username, null, null));
-
-        // 토큰 재발행 후 업데이트
-        String newRefreshToken = publishRefreshToken(username);
-        token.updateRefreshToken(newRefreshToken);
-        redisTokenRepository.save(token);
-
-        return newRefreshToken;
     }
 
     /**
@@ -186,14 +163,6 @@ public class JwtUtils {
         } catch (Exception e) {
             return false;
         }
-//
-//        Jws<Claims> claimsJws = Jwts.parser()
-//                .verifyWith(secretKey)
-//                .build()
-//                .parseSignedClaims(refreshToken);
-//
-//        // 만료된 토큰
-//        return claimsJws.getPayload().getExpiration().before(new Date());
     }
 
     /**
