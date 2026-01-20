@@ -3,6 +3,7 @@ package whitekim.self_developing.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,19 +37,35 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthorizationFilter jwtAuthorizationFilter, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    @Order(1)
+    public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(AbstractHttpConfigurer::disable);
         http
-                .headers(opt -> opt.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .securityMatcher(request -> request.getRequestURI().startsWith("/admin/"))
+                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole(String.valueOf(Permission.ADMIN))
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthorizationFilter jwtAuthorizationFilter, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(AbstractHttpConfigurer::disable);
+        http
+                .securityMatcher(request -> request.getRequestURI().startsWith("/api/"))
+                .headers(opt -> opt.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/script/**").permitAll()      // 스크립트
                         .requestMatchers("/css/**").permitAll()         // CSS
-                        .requestMatchers("/api/member/join").permitAll()    // 회원가입
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)

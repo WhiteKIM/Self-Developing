@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>어드민 관리화면</title>
-</head>
-<body>
-    <h2>test</h2>
-</body>
-</html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="body">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    사용자 현황
+                </div>
+                <div class="card-body">
+                    <canvas id="userChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

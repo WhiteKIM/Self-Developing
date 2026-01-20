@@ -9,24 +9,53 @@ const xhr = new XMLHttpRequest();
  * 로그인 버튼 클릭
  * */
 const btn_login_onclick = function () {
-    const id = document.getElementById("username");
-    const password = document.getElementById("password");
-    const param = {
-       username : id,
-       password : password,
-    }
+    const id = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    xhr.open("POST", "/api/admin/login")
-    xhr.setRequestHeader("Content-Type", "application/json");
-
-    // json데이터 전달
-    xhr.send(JSON.stringify(param));
-    xhr.onload = () => {
-        if(xhr.status === 200) {
-            // 넘어온 토큰 정보를 쿠키에 저장
-            document.cookie = "Access-Token="+xhr.getResponseHeader("Access-Token")+";";
-
-            window.replace = "/api/admin/main"
+    fetch('/admin/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username : id,
+            password : password,
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.redirectUrl) {
+            window.location.href = data.redirectUrl;
         }
-    }
+    });
  }
+
+/**
+ * 메인화면 차트 출력
+ */
+document.addEventListener("DOMContentLoaded", function() {
+    const ctx = document.getElementById('userChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar', // 차트 형태 (bar, line, pie, doughnut 등)
+        data: {
+            labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+            datasets: [{
+                label: '신규 가입자 수',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});

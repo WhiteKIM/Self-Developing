@@ -37,6 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         UserDetails userDetails;
 
         log.info("[AccessToken Info] : {}", accessToken);
+        log.info("[Request] : {}", request.getRequestURI());
 
         if(accessToken == null || accessToken.isBlank()) {
             log.info("[Access Token] Token is Empty or Not Available");

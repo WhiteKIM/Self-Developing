@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!--
+    @ 메인화면 통계 기능
+-->
 <mapper namespace="whitekim.self_developing.repository.StatMapperRepository">
     <!-- 사용자별 정오표 집계 구현 -->
     <select id="selectBySolvedProblemStat" parameterType="long" resultType="map">
@@ -17,7 +19,8 @@
                     1
                 else
                     0
-            ), 0) as wrong_count
+            ), 0) as wrong_count,
+            count(1) as all_count
         from problem_history his
             join member mem
                 on his.member_id = mem.id
@@ -28,11 +31,80 @@
         group by his.member_id
     </select>
 
-    <!-- N일내 신규 유저수 집계 -->
+    <!-- 7일내 신규 유저수 집계 -->
+    <select id="selectNewMemberCount" resultType="map">
+        select
+            count(1) as count
+        from
+            member m /* 사용자 */
+        where
+            to_char(m.at_created, "YYYYMMDD") between to_char(now(), "YYYYMMDD") and to_char(now() + interval "7 day", "YYYYMMDD")
+            and m.permission <![CDATA[<>]]]> "ROLE_ADMIN"
+    </select>
 
     <!-- 지금까지 등록된 문제, 문제집, 자격증 정보 조회 -->
+    <select id="selectCountPaperAndProblem" resultType="map">
+        select
+            '1' as gubun,
+            count(1) as cnt
+        from
+            certification cert
+        union all
+        select
+            '2' as gubun,
+            count(1) as cnt
+        from
+            page p
+        union all
+        select
+            '3' as gubun,
+            count(1) as cnt
+        from paper p
+        union all
+        select
+            '4' as gubun
+            count(1) as cnt
+        from problem p
+    </select>
 
     <!-- N일동안 해결된 문제 수 -->
+    <select id="selectProblemHistoryAgg" resultType="map">
+        select
+            count(1) as total_count,
+            sum(
+                case when hist.is_correct = "false" then 1
+                else 0
+                end
+            ) as wrong_count,
+            sum(
+                case when hist.is_correct = "true" then 1
+                else 0
+                end
+            ) as right_count
+        from
+            problem_history hist
+        where
+            to_char(hist.at_created, "YYYYMMDD") between to_char(now(), "YYYYMMDD") and to_char(now() + interval "7 day", "YYYYMMDD")
+    </select>
 
     <!-- 난이도별 문제 정오표 통계 -->
+    <select id="selectDegreeLevelAgg" resultType="map">
+        select
+            p.difficulty,
+            sum(
+                case when hist.is_correct = "false" then 1
+                else 0
+                end
+            ) as wrong_count,
+            sum(
+                case when hist.is_correct = "true" then 1
+                else 0
+                end
+            ) as right_count
+        from
+            problem_history hist
+                left join problem p
+                    on hist.problem_id = p.id
+        group by p.difficulty
+    </select>
 </mapper>

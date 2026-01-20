@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import java.io.IOException;
  * 로그인 요청 시 해당 정보를 검증하고, jwt토큰을 발행한다.
  */
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtils jwtUtils;
     private final ObjectMapper objectMapper;
@@ -51,6 +53,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         LoginMember loginMember = objectMapper.readValue(request.getInputStream(), LoginMember.class);
+
+        log.info("[JwtAuthenticateFilter] request : " + request.getRequestURI());
 
         if(loginMember == null)
             throw new LoginException("로그인 정보가 존재하지 않습니다.");

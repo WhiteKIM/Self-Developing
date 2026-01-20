@@ -1,6 +1,5 @@
 package whitekim.self_developing;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import whitekim.self_developing.dto.request.CertForm;
@@ -25,8 +24,7 @@ public class TestConstruct {
     private final PageService pageService;
     private final PaperService paperService;
     
-    
-    @PostConstruct
+
     void init() {
         // 사용자 회원가입 및 등록
 //        Member member = Member.builder()
