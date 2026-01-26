@@ -13,6 +13,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.admin.mapper.StatMapperRepository;
+import whitekim.self_developing.admin.model.MainStatInfo;
+import whitekim.self_developing.admin.model.stat.CertPaperPrbStatInfo;
+import whitekim.self_developing.admin.model.stat.DiffProblemStatInfo;
+import whitekim.self_developing.admin.model.stat.ProblemStatInfo;
 import whitekim.self_developing.dto.request.LoginMember;
 import whitekim.self_developing.exception.PermissionDeniedException;
 import whitekim.self_developing.model.Member;
@@ -29,6 +34,7 @@ import java.util.Optional;
 public class AdminService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final StatMapperRepository statMapperRepository;
 
     /**
      * 관리자 로그인 
@@ -63,5 +69,30 @@ public class AdminService {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext()
         );
+    }
+
+    /**
+     * 관리자 메인화면 차트 조회
+     */
+    public MainStatInfo selectStatInfo() {
+        // 문제, 문제집 통계 조회
+        CertPaperPrbStatInfo certPaperPrbStatInfo = statMapperRepository.selectCountPaperAndProblem();
+
+        // 신규 사용자 수 조회
+        Long newMemberCount = statMapperRepository.selectNewMemberCount();
+
+        // 일주일간 해결된 문제
+        ProblemStatInfo problemStatInfo = statMapperRepository.selectProblemHistoryAgg();
+
+        // 난이도별 문제 정오표 통계
+        DiffProblemStatInfo diffProblemStatInfo = statMapperRepository.selectDegreeLevelAgg();
+
+        MainStatInfo mainStatInfo = new MainStatInfo();
+        mainStatInfo.setProblemStatInfo(problemStatInfo);
+        mainStatInfo.setDiffProblemStatInfo(diffProblemStatInfo);
+        mainStatInfo.setCertPaperPrbStatInfo(certPaperPrbStatInfo);
+        mainStatInfo.setNewMemberCount(newMemberCount);
+
+        return mainStatInfo;
     }
 }

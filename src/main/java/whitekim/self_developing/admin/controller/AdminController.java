@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import whitekim.self_developing.admin.model.MainStatInfo;
 import whitekim.self_developing.admin.service.AdminService;
 import whitekim.self_developing.dto.request.LoginMember;
 
@@ -32,7 +33,10 @@ public class AdminController {
 
     @GetMapping("/main")
     public String adminMainPage(Model model) {
+        MainStatInfo statInfo = adminService.selectStatInfo();
+
         model.addAttribute("content", "main :: body");
+        model.addAttribute("statInfo", statInfo);
 
         return "commons/layout";
     }

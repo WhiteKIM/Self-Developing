@@ -36,6 +36,7 @@ dependencies {
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+	implementation 'org.springframework.boot:spring-boot-devtools'
 
 	/* Annotation Processor */
 //	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
