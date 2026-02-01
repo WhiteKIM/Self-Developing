@@ -1,17 +1,57 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="body">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
+    <div class="container mt-5">
+        <div class="card row">
+            <div class="card-main col-md-3">
                 <div class="card-header">
-                    사용자 현황
+                    등록 현황
                 </div>
                 <div class="card-body">
-                    <canvas id="userChart"></canvas>
+                    <!-- 값을 받는 것을 확인하였고, 해당 정보로 차트 구성을 해야함 -->
+                    <canvas id="regChart" th:attr="data-stat-info=${statInfo.certPaperPrbStatInfo}"></canvas>
+                </div>
+            </div>
+            <div class="card-main col-md-3">
+                <div class="card-header">
+                    신규 사용자 현황
+                </div>
+                <div class="card-body">
+                    <div>
+                        <label for="all-count">전체 사용자</label>
+                        <input id="all-count" readonly th:value="${statInfo.newMemberCount.allCnt}"/>
+                        <label for="newbie-count">신규유저</label>
+                        <input id="newbie-count" readonly th:value="${statInfo.newMemberCount.newbieCnt}"/>
+                    </div>
+                    <!-- 값을 받는 것을 확인하였고, 해당 정보로 차트 구성을 해야함 -->
+                    <canvas id="userChart" th:attr="data-stat-info=${statInfo.newMemberCount}"></canvas>
+                </div>
+            </div>
+            <div class="card-main col-md-3">
+                <div class="card-header">
+                    문제풀이 현황
+                </div>
+                <div class="card-body">
+                    <!-- 값을 받는 것을 확인하였고, 해당 정보로 차트 구성을 해야함 -->
+                    <div>
+                        <label for="total-count">전체 시도</label>
+                        <input id="total-count" readonly th:value="${statInfo.problemStatInfo.totalCnt}"/>
+                        <label for="right-count">정답</label>
+                        <input id="right-count" readonly th:value="${statInfo.problemStatInfo.wrongCnt}"/>
+                        <label for="wrong-count">오답</label>
+                        <input id="wrong-count" readonly th:value="${statInfo.problemStatInfo.rightCnt}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="card-main col-md-3">
+                <div class="card-header">
+                    난이도별 현황
+                </div>
+                <div class="card-body">
+                    <!-- 값을 받는 것을 확인하였고, 해당 정보로 차트 구성을 해야함 -->
+                    <canvas id="diffyChart" th:attr="data-stat-info=${statInfo.diffProblemStatInfo}"></canvas>
                 </div>
             </div>
         </div>
     </div>
-
 </div>

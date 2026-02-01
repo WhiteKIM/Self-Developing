@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import whitekim.self_developing.exception.ExpiredTokenException;
 
 import java.util.HashMap;
@@ -45,5 +46,20 @@ public class ExceptionControllerAdvice {
         body.put("error", "SESSION_EXPIRED");
         body.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    /**
+     * 잘못된 주소 또는 URL 호출 시도
+     */
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<Map<String, Object>> handlePageNotFound(NoHandlerFoundException e) {
+            log.error("[ExceptionController] Page Not Found");
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("status", 404);
+            body.put("error", "PAGE_NOT_FOUND");
+            body.put("message", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 }

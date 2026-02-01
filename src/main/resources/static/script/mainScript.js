@@ -34,15 +34,22 @@ const btn_login_onclick = function () {
  * 메인화면 차트 출력
  */
 document.addEventListener("DOMContentLoaded", function() {
-    const ctx = document.getElementById('userChart').getContext('2d');
+    const ctx1 = document.getElementById('regChart').getContext('2d'); // 시험현황
+    const ctx4 = document.getElementById('diffyChart').getContext('2d'); // 난이도별 현황
 
-    new Chart(ctx, {
+    var regInfo = document.getElementById('regChart').dataset.statInfo;
+    var difyInfo = document.getElementById('diffyChart').dataset.statInfo;
+
+    console.log(difyInfo);
+
+    // 시험정보 현황
+    new Chart(ctx1, {
         type: 'bar', // 차트 형태 (bar, line, pie, doughnut 등)
         data: {
-            labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+            labels: ['자격증', '시험', '시험지', '문제'],
             datasets: [{
-                label: '신규 가입자 수',
-                data: [12, 19, 3, 5, 2, 3],
+                label: '등록 건수',
+                data: [regInfo.certCnt, regInfo.pageCnt, regInfo.paperCnt, regInfo.problemCnt],
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
@@ -57,5 +64,51 @@ document.addEventListener("DOMContentLoaded", function() {
             responsive: true,
             maintainAspectRatio: false
         }
+    });
+
+    // 문제풀이 현황
+
+    // 난이도별 현황
+    var diffLabel = [];
+    var diffRightCount = [];
+    var diffWrongCount = [];
+
+    for(var i = 0; i < difyInfo.length; i++) {
+        diffLabel.push(difyInfo[i].difficulty);
+        diffRightCount.push(difyInfo[i].rightCnt);
+        diffWrongCount.push(difyInfo[i].wrongCnt);
+    }
+
+    new Chart(ctx4, {
+            type: 'bar', // 차트 형태 (bar, line, pie, doughnut 등)
+            data: {
+                labels: diffLabel,
+                datasets: [
+                    {
+                        label: '정답',
+                        data: diffRightCount,
+                        backgroundColor: 'blue',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '오답',
+                        data: diffWrongCount,
+                        backgroundColor: 'red',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        stacked : true,
+                        beginAtZero: true
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
     });
 });

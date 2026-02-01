@@ -32,27 +32,37 @@
     </select>
 
     <!-- 7일내 신규 유저수 집계 -->
-    <select id="selectNewMemberCount" resultType="Long">
+    <select id="selectNewMemberCount" resultType="whitekim.self_developing.admin.model.stat.MemberStatInfo">
         select
-            count(1) as count
-        from
-            member m /* 사용자 */
-        where
-            to_char(m.at_created, "YYYYMMDD") between to_char(now(), "YYYYMMDD") and to_char(now() + interval "7 day", "YYYYMMDD")
-            and m.permission <![CDATA[<>]]]> "ROLE_ADMIN"
+            max(case when gubun = '1' then count end) as newbie_cnt,
+            max(case when gubun = '2' then count end) as all_cnt
+        from (
+            select
+                '1' as gubun,
+                count(1) as count
+            from
+                member m /* 사용자 */
+            where
+                to_char(m.at_created, 'YYYYMMDD') between to_char(now(), 'YYYYMMDD') and to_char(now() + interval '7 day', 'YYYYMMDD')
+                and m.permission <![CDATA[<>]]> 1   -- 1 : ADMIN
+            union all
+            select
+                '2' as gubun,
+                count(1) as count
+            from
+                member m /* 사용자 */
+            where
+                m.permission <![CDATA[<>]]> 1   -- 1 : ADMIN
+        ) dta
     </select>
 
     <!-- 지금까지 등록된 문제, 문제집, 자격증 정보 조회 -->
     <select id="selectCountPaperAndProblem" resultType="whitekim.self_developing.admin.model.stat.CertPaperPrbStatInfo">
         select
-            case when gubun = '1' then max(cnt)
-            end as cert_cnt,
-            case when gubun = '2' then max(cnt)
-            end page_cnt,
-            case when gubun = '3' then max(cnt)
-            end as paper_cnt,
-            case when gubun = '4' then max(cnt)
-            end as problem_cnt
+            max(case when gubun = '1' then cnt end) as cert_cnt,
+            max(case when gubun = '2' then cnt end) page_cnt,
+            max(case when gubun = '3' then cnt end) as paper_cnt,
+            max(case when gubun = '4' then cnt end) as problem_cnt
         from (
             select
                 '1' as gubun,
@@ -72,7 +82,7 @@
             from paper p
             union all
             select
-                '4' as gubun
+                '4' as gubun,
                 count(1) as cnt
             from
                 problem p
@@ -84,19 +94,19 @@
         select
             count(1) as total_cnt,
             sum(
-                case when hist.is_correct = "false" then 1
+                case when hist.is_correct = 'false' then 1
                 else 0
                 end
             ) as wrong_cnt,
             sum(
-                case when hist.is_correct = "true" then 1
+                case when hist.is_correct = 'true' then 1
                 else 0
                 end
             ) as right_cnt
         from
             problem_history hist
         where
-            to_char(hist.at_created, "YYYYMMDD") between to_char(now(), "YYYYMMDD") and to_char(now() + interval "7 day", "YYYYMMDD")
+            to_char(hist.at_created, 'YYYYMMDD') between to_char(now(), 'YYYYMMDD') and to_char(now() + interval '7 day', 'YYYYMMDD')
     </select>
 
     <!-- 난이도별 문제 정오표 통계 -->
@@ -104,12 +114,12 @@
         select
             p.difficulty,
             sum(
-                case when hist.is_correct = "false" then 1
+                case when hist.is_correct = 'false' then 1
                 else 0
                 end
             ) as wrong_cnt,
             sum(
-                case when hist.is_correct = "true" then 1
+                case when hist.is_correct = 'true' then 1
                 else 0
                 end
             ) as right_cnt

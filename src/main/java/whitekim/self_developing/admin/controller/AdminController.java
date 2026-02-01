@@ -5,14 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import whitekim.self_developing.admin.model.MainStatInfo;
+import whitekim.self_developing.admin.model.MemberInfo;
 import whitekim.self_developing.admin.service.AdminService;
 import whitekim.self_developing.dto.request.LoginMember;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,8 +62,20 @@ public class AdminController {
         return "/stat/main";
     }
 
-    @GetMapping("/management")
+    @GetMapping("/user/management")
     public String adminManagementPage(Model model) {
-        return "/manage/main";
+        List<MemberInfo> memberList = adminService.selectMemberList();
+
+        model.addAttribute("content", "member/memberManagement :: body");
+        model.addAttribute("userList", memberList);
+
+        return "commons/layout";
+    }
+
+    @DeleteMapping("/user/delete")
+    public ResponseEntity<String> deleteMember(@RequestParam Long memberId) {
+        adminService.deleteMember(memberId);
+
+        return ResponseEntity.ok("삭제 완료");
     }
 }

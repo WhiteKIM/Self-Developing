@@ -13,10 +13,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import whitekim.self_developing.admin.mapper.MemberManagementMapper;
 import whitekim.self_developing.admin.mapper.StatMapperRepository;
 import whitekim.self_developing.admin.model.MainStatInfo;
+import whitekim.self_developing.admin.model.MemberInfo;
 import whitekim.self_developing.admin.model.stat.CertPaperPrbStatInfo;
 import whitekim.self_developing.admin.model.stat.DiffProblemStatInfo;
+import whitekim.self_developing.admin.model.stat.MemberStatInfo;
 import whitekim.self_developing.admin.model.stat.ProblemStatInfo;
 import whitekim.self_developing.dto.request.LoginMember;
 import whitekim.self_developing.exception.PermissionDeniedException;
@@ -35,6 +38,7 @@ public class AdminService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final StatMapperRepository statMapperRepository;
+    private final MemberManagementMapper memberManagementMapper;
 
     /**
      * 관리자 로그인 
@@ -76,16 +80,29 @@ public class AdminService {
      */
     public MainStatInfo selectStatInfo() {
         // 문제, 문제집 통계 조회
-        CertPaperPrbStatInfo certPaperPrbStatInfo = statMapperRepository.selectCountPaperAndProblem();
+        CertPaperPrbStatInfo certPaperPrbStatInfo =
+                statMapperRepository.selectCountPaperAndProblem() != null ?
+                        statMapperRepository.selectCountPaperAndProblem() :
+                        new CertPaperPrbStatInfo(0L,0L,0L,0L);
 
         // 신규 사용자 수 조회
-        Long newMemberCount = statMapperRepository.selectNewMemberCount();
+        MemberStatInfo newMemberCount =
+                statMapperRepository.selectNewMemberCount() != null ?
+                        statMapperRepository.selectNewMemberCount() :
+                        new MemberStatInfo(0L, 0L)
+                ;
 
         // 일주일간 해결된 문제
-        ProblemStatInfo problemStatInfo = statMapperRepository.selectProblemHistoryAgg();
+        ProblemStatInfo problemStatInfo =
+                statMapperRepository.selectProblemHistoryAgg() != null ?
+                        statMapperRepository.selectProblemHistoryAgg() :
+                        new ProblemStatInfo(0L, 0L, 0L);
 
         // 난이도별 문제 정오표 통계
-        DiffProblemStatInfo diffProblemStatInfo = statMapperRepository.selectDegreeLevelAgg();
+        List<DiffProblemStatInfo> diffProblemStatInfo =
+                statMapperRepository.selectDegreeLevelAgg() != null && !statMapperRepository.selectDegreeLevelAgg().isEmpty() ?
+                        statMapperRepository.selectDegreeLevelAgg() :
+                        List.of();
 
         MainStatInfo mainStatInfo = new MainStatInfo();
         mainStatInfo.setProblemStatInfo(problemStatInfo);
@@ -94,5 +111,19 @@ public class AdminService {
         mainStatInfo.setNewMemberCount(newMemberCount);
 
         return mainStatInfo;
+    }
+
+    /**
+     * 사용자 관리화면 조회
+     */
+    public List<MemberInfo> selectMemberList() {
+        return memberManagementMapper.selectMemberList();
+    }
+
+    /**
+     * 사용자 계정 삭제처리
+     */
+    public void deleteMember(Long id) {
+        memberManagementMapper.deleteMember(id);
     }
 }

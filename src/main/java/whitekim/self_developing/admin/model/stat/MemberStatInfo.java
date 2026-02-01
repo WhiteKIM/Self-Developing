@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CertPaperPrbStatInfo {
-    private Long certCnt;
-    private Long pageCnt;
-    private Long paperCnt;
-    private Long problemCnt;
+public class MemberStatInfo {
+    private Long newbieCnt;
+    private Long allCnt;
 }

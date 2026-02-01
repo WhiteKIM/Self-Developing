@@ -1,12 +1,13 @@
 package whitekim.self_developing.admin.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
-import whitekim.self_developing.admin.model.stat.CertPaperPrbStatInfo;
-import whitekim.self_developing.admin.model.stat.DiffProblemStatInfo;
-import whitekim.self_developing.admin.model.stat.MemberSolvedStatInfo;
-import whitekim.self_developing.admin.model.stat.ProblemStatInfo;
+import whitekim.self_developing.admin.model.stat.*;
+
+import java.util.List;
 
 @Repository
+@Mapper
 public interface StatMapperRepository {
 
     /**
@@ -20,7 +21,7 @@ public interface StatMapperRepository {
      * 일주일 내 신규가입자 집계
      * @return
      */
-    Long selectNewMemberCount();
+    MemberStatInfo selectNewMemberCount();
 
     /**
      * 현재까지 등록된
@@ -38,5 +39,5 @@ public interface StatMapperRepository {
      * 난이도별 문제 정오표 통계
      * @return
      */
-    DiffProblemStatInfo selectDegreeLevelAgg();
+    List<DiffProblemStatInfo> selectDegreeLevelAgg();
 }
