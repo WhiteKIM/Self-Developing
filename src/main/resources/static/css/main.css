@@ -1,0 +1,4 @@
+a {
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 링크 색상 기본값으로 변경 (선택사항) */
+}

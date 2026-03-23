@@ -6,11 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-import whitekim.self_developing.model.ChoiceProblem;
-import whitekim.self_developing.model.EssayProblem;
-import whitekim.self_developing.model.Problem;
-
-import java.util.List;
+import whitekim.self_developing.model.problem.Answer;
+import whitekim.self_developing.model.problem.GradingStrategy;
 
 /**
  * @author whitekim
@@ -23,24 +20,17 @@ import java.util.List;
 public class ProblemForm {
     private Long id;                // 문제 ID - 수정 시 필요
     @NotBlank
-    private String problemType;     // 문제 타입
+    private GradingStrategy problemStrategy;     // 문제 타입
     @NotBlank
     private String title;           // 제목
     private String round;           // 회차
     private String subject;         // 과목정보
     @NotBlank
-    private String problem;         // 문제내용
-
-    private List<String> suggest;   // 보기
-
-    private String categoryName;    // 카테고리명
-
+    private String problemContent;         // 문제내용
     private String imageFileName;   // 이미지파일명
 
     @NotBlank
-    private List<String> answer;    // 정답
-    @NotBlank
-    private String comment;         // 해설
+    private Answer answer;    // 정답
 
     private int score;              // 점수
     @Range(min = 0, max = 5)
@@ -49,14 +39,6 @@ public class ProblemForm {
     private String status;          // 상태여부(U, D)
     
     private ImageMetaInfo imageMetaInfo;
-
-    public Problem toChoice() {
-        return new ChoiceProblem(this);
-    }
-
-    public Problem toEssay() {
-        return new EssayProblem(this);
-    }
 
     /**
      * 이미지 메타정보 내부클래스

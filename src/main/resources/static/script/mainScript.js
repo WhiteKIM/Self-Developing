@@ -112,3 +112,15 @@ document.addEventListener("DOMContentLoaded", function() {
             }
     });
 });
+
+/**
+ * 삭제버튼 클릭
+ */
+function btn_delete_onclick(userId) {
+    fetch('/admin/user/delete?memberId=' + userId, {
+      method : 'DELETE',
+    }).then(res => res.json())
+    .then(data => {
+      console.log(data);
+    });
+  }

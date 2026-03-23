@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import whitekim.self_developing.dto.response.MemberDetail;
 import whitekim.self_developing.model.enumerate.Permission;
+import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.model.relation.MemberFavoritePaper;
 import whitekim.self_developing.model.relation.MemberRecentPaper;
 

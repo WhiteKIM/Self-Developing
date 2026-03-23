@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import whitekim.self_developing.model.problem.Problem;
 
 @Entity
 @AllArgsConstructor

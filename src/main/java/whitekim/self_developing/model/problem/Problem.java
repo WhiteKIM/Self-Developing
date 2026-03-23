@@ -1,4 +1,4 @@
-package whitekim.self_developing.model;
+package whitekim.self_developing.model.problem;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Range;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.response.MarkingProblem;
+import whitekim.self_developing.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +20,14 @@ import java.util.List;
  */
 @Entity
 @Getter
-@DiscriminatorColumn(name = "DTYPE")
-@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public abstract class Problem extends BaseEntity {
     private String title;   // 제목
     private String round;   // 회차정보
     private String subject; //과목정보
-    private String problem; // 문제내용 - 텍스트
+    private String problemContent; // 문제내용 - 텍스트
 
     @Setter
     @OneToOne
@@ -51,34 +51,46 @@ public abstract class Problem extends BaseEntity {
     @JoinColumn(name = "tag_id")
     private List<Tag> tagList = new ArrayList<>();
 
-    private String comment;     //해설
-
     @Min(value = 0L)
     private int score = 0;      // 점수
 
     @Range(min = 0, max = 5)
     private int difficulty = 0;   // 난이도
 
+    private Answer answer;                  // 정답
+    private GradingStrategy strategy;      // 채점방식(주관식, 객관식)
+
     /**
-     * 이미지 없는 문제 등록
-     * @param form
+     * DTO -> ENTITY
+     * @param form - 입력DTo
+     * @return - Entity
      */
-    public Problem(ProblemForm form) {
-        this.title = form.getTitle();
-        this.round = form.getRound();
-        this.subject = form.getSubject();
-        this.problem = form.getProblem();
-        this.comment = form.getComment();
-        this.score = form.getScore();
-        this.difficulty = form.getDifficulty();
+    public static Problem toEntity(ProblemForm form) {
+        return Problem.builder()
+                .strategy(form.getProblemStrategy())
+                .title(form.getTitle())
+                .round(form.getRound())
+                .subject(form.getSubject())
+                .problemContent(form.getProblemContent())
+                .answer(form.getAnswer())
+                .score(form.getScore())
+                .difficulty(form.getDifficulty())
+                .build();
     }
 
+    /**
+     * 문제 업데이트
+     * @param updateProblem - 수정정보
+     */
     public void update(Problem updateProblem) {
+        this.strategy = updateProblem.getStrategy();
         this.title = updateProblem.getTitle();
         this.round = updateProblem.getRound();
         this.subject = updateProblem.getSubject();
-        this.problem = updateProblem.getProblem();
-        this.comment = updateProblem.getComment();
+        this.problemContent = updateProblem.getProblemContent();
+        this.answer = updateProblem.getAnswer();
+        this.score = updateProblem.getScore();
+        this.difficulty = updateProblem.getDifficulty();
     }
 
     /**
@@ -99,7 +111,17 @@ public abstract class Problem extends BaseEntity {
      * @param submitAnswer - 제출 답안
      * @return
      */
-    public abstract MarkingProblem mark(String submitAnswer);
+    public MarkingProblem mark(Answer submitAnswer) {
+        return new MarkingProblem(
+                this.getId(),
+                strategy.grade(answer, submitAnswer),
+                this.score,
+                strategy.getType().toString(),
+                submitAnswer.getContent(),
+                answer.getContent(),
+                answer.getComment()
+        );
+    }
 
     public void addVote(Vote vote) {
         this.voteList.add(vote);

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.model.enumerate.PaperType;
+import whitekim.self_developing.model.problem.Problem;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -13,14 +13,16 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="user : ${userList}">
-        <td>사용자명</td>
-        <td>가입일자</td>
-        <td>최근접속일자</td>
-        <td><button >버튼</button></td>
+      <tr th:each="user, userIdx : ${userList}">
+        <td><span th:text="${user.username}"></span></td>
+        <td><span th:text="${user.atCreated}"></span></td>
+        <td><span th:text="${user.latestAccessTime}"></span></td>
+        <td><button th:attr="onclick=|btn_delete_onclick('${user.userId}')|" th:id='|btn_delete-${userIdx.index}|'>삭제</button></td>
       </tr>
       </tbody>
     </table>
   </div>
 </div>
+
+
 </html>

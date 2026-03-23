@@ -24,8 +24,12 @@ import whitekim.self_developing.admin.model.stat.ProblemStatInfo;
 import whitekim.self_developing.dto.request.LoginMember;
 import whitekim.self_developing.exception.PermissionDeniedException;
 import whitekim.self_developing.model.Member;
+import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.enumerate.Permission;
+import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.repository.MemberRepository;
+import whitekim.self_developing.service.PaperService;
+import whitekim.self_developing.service.ProblemService;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +43,8 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final StatMapperRepository statMapperRepository;
     private final MemberManagementMapper memberManagementMapper;
+    private final PaperService paperService;
+    private final ProblemService problemService;
 
     /**
      * 관리자 로그인 
@@ -125,5 +131,21 @@ public class AdminService {
      */
     public void deleteMember(Long id) {
         memberManagementMapper.deleteMember(id);
+    }
+
+    public List<Paper> selectPaperList() {
+        return paperService.getPaperList();
+    }
+
+    public Paper selectPaperDetail(Long paperId) {
+        return paperService.getPaperDetail(paperId);
+    }
+
+    public List<Problem> selectProblemList() {
+        return problemService.getProblemList();
+    }
+
+    public Problem selectProblemDetail(Long problemId) {
+        return null;
     }
 }

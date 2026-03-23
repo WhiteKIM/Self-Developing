@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="body">
+    <div class="container mt-3">
+        <h2>문제 관리</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>문제</th>
+                <th>시험정보</th>
+                <th>과목</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="problem, problemIdx : ${problemList}">
+                <td><span th:text="${problem.title}"></span></td>
+                <td><span th:text="${problem.round}"></span></td>
+                <td><span th:text="${problem.subject}"></span></td>
+                <td><button th:attr="onclick=|btn_deleteProblem_onclick('${problem.id}')|" th:id='|btn_delete-${problemIdx.index}|'>삭제</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</html>

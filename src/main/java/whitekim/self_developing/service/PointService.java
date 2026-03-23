@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import whitekim.self_developing.model.Log;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Point;
-import whitekim.self_developing.model.Problem;
+import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.properties.PointProperties;
 import whitekim.self_developing.repository.LogRepository;
 import whitekim.self_developing.repository.PointRepository;

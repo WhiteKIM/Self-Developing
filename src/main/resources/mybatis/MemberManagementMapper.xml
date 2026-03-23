@@ -4,7 +4,8 @@
 <mapper namespace="whitekim.self_developing.admin.mapper.MemberManagementMapper">
     <select id="selectMemberList" resultType="whitekim.self_developing.admin.model.MemberInfo">
         select
-            m.user_id,
+            m.
+        id as user_id,
             m.username,
             m.at_created,
             m.latest_access_time

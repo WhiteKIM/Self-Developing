@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.Member;
-import whitekim.self_developing.model.Problem;
 import whitekim.self_developing.model.ProblemHistory;
+import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.service.ProblemHistoryService;
 import whitekim.self_developing.service.ProblemService;
 

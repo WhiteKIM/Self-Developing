@@ -10,6 +10,8 @@ import whitekim.self_developing.admin.model.MainStatInfo;
 import whitekim.self_developing.admin.model.MemberInfo;
 import whitekim.self_developing.admin.service.AdminService;
 import whitekim.self_developing.dto.request.LoginMember;
+import whitekim.self_developing.model.Paper;
+import whitekim.self_developing.model.problem.Problem;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class AdminController {
     private final AdminService adminService;
+
+    /*  공통 기능 */
 
     @GetMapping("/main")
     public String adminMainPage(Model model) {
@@ -62,6 +66,8 @@ public class AdminController {
         return "/stat/main";
     }
 
+    /* ========================= 사용자 관리 ========================= */
+
     @GetMapping("/user/management")
     public String adminManagementPage(Model model) {
         List<MemberInfo> memberList = adminService.selectMemberList();
@@ -77,5 +83,49 @@ public class AdminController {
         adminService.deleteMember(memberId);
 
         return ResponseEntity.ok("삭제 완료");
+    }
+
+    /* ========================= 문제집 관리 ========================= */
+
+    @GetMapping("/paper/management")
+    public String adminManagementPaper(Model model) {
+        List<Paper> paperList = adminService.selectPaperList();
+
+        model.addAttribute("content", "paper/paperManagement :: body");
+        model.addAttribute("paperList", paperList);
+
+        return "commons/layout";
+    }
+
+    @GetMapping("/paper/management/detail")
+    public String adminManagementPaper(@RequestParam Long paperId, Model model) {
+        Paper paper = adminService.selectPaperDetail(paperId);
+
+        model.addAttribute("content", "paper/paperManagementDetail :: body");
+        model.addAttribute("paper", paper);
+
+        return "commons/layout";
+    }
+
+    /* ========================= 문제 관리  =========================*/
+
+    @GetMapping("/problem/management")
+    public String adminManagementProblem(Model model) {
+        List<? extends Problem> problemList = adminService.selectProblemList();
+
+        model.addAttribute("content", "problem/problemManagement :: body");
+        model.addAttribute("problemList", problemList);
+
+        return "commons/layout";
+    }
+
+    @GetMapping("/problem/management/detail")
+    public String adminManagerProblemDetail(@RequestParam Long problemId, Model model) {
+        Problem problem = adminService.selectProblemDetail(problemId);
+
+        model.addAttribute("content", "problem/problemManagementDetail");
+        model.addAttribute("problem", problem);
+
+        return "commons/layout";
     }
 }

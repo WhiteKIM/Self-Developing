@@ -16,10 +16,10 @@ import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.dto.response.MemberInfo;
 import whitekim.self_developing.exception.AlreadyExistsException;
 import whitekim.self_developing.model.*;
+import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.model.relation.MemberFavoritePaper;
 import whitekim.self_developing.model.relation.MemberRecentPaper;
 import whitekim.self_developing.repository.*;
-import whitekim.self_developing.service.factory.problem.ProblemRepoFactory;
 import whitekim.self_developing.utils.AuthUtils;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.UUID;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PaperRepository paperRepository;
-    private final ProblemRepoFactory repoFactory;
+    private final ProblemRepository problemRepository;
     private final PasswordEncoder passwordEncoder;
     private final PointService pointService;
     private final FavoriteRepository favoriteRepository;
@@ -164,8 +164,7 @@ public class MemberService {
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
 
         for(SubmitProblem submitProblem : wrongProblemList) {
-            ProblemRepository<? extends Problem> repository = repoFactory.createRepository(submitProblem.getType());
-            Problem problem = repository.findById(submitProblem.getId()).orElseThrow();
+            Problem problem = problemRepository.findById(submitProblem.getId()).orElseThrow();
             loginMember.addWrongProblem(problem);
         }
     }

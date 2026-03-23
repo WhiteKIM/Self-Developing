@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.dto.request.SubmitAnswer;
 import whitekim.self_developing.dto.response.MarkingPaper;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.service.MemberService;
@@ -75,7 +76,7 @@ public class PaperController {
      * @return 채점 결과
      */
     @PostMapping("/v1/markPaper")
-    public ResponseEntity<?> markingPaper(@RequestParam("paperId") Long paperId, @RequestBody List<String> answerList) {
+    public ResponseEntity<?> markingPaper(@RequestParam("paperId") Long paperId, @RequestBody List<SubmitAnswer> answerList) {
         MarkingPaper markingPaper = paperService.markingPaper(paperId, answerList);
 
         return ResponseEntity.ok(markingPaper);

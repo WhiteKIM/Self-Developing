@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="body">
+    <div class="container mt-3">
+        <h2>문제집 관리</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>문제집</th>
+                <th>시험 </th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="paper, paperIdx : ${paperList}">
+                <td><span th:text="${paper.title}"></span></td>
+                <td><span th:text="${paper.type}"></span></td>
+                <td><button th:attr="onclick=|btn_deletePaper_onclick('${paper.id}')|" th:id='|btn_delete-${paperIdx.index}|'>삭제</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</html>

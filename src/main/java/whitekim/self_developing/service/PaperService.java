@@ -7,15 +7,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
+import whitekim.self_developing.dto.request.SubmitAnswer;
 import whitekim.self_developing.dto.response.MarkingPaper;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotExistPaperException;
 import whitekim.self_developing.exception.NotFoundDataException;
-import whitekim.self_developing.model.*;
-import whitekim.self_developing.repository.*;
-import whitekim.self_developing.service.factory.problem.ProblemFactory;
-import whitekim.self_developing.service.factory.problem.ProblemRepoFactory;
-import whitekim.self_developing.service.factory.problem.ProblemServiceFactory;
+import whitekim.self_developing.model.Image;
+import whitekim.self_developing.model.Page;
+import whitekim.self_developing.model.Paper;
+import whitekim.self_developing.model.problem.Answer;
+import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.repository.PageRepository;
+import whitekim.self_developing.repository.PaperRepository;
+import whitekim.self_developing.repository.ProblemRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,9 +33,8 @@ import java.util.Optional;
 public class PaperService {
     private final PaperRepository paperRepository;
     private final PageRepository pageRepository;
-    private final ProblemFactory problemFactory;
-    private final ProblemRepoFactory problemRepoFactory;
-    private final ProblemServiceFactory problemServiceFactory;
+    private final ProblemRepository problemRepository;
+    private final ProblemService problemService;
     private final VoteService voteService;
     private final ImageService imageService;
 
@@ -79,11 +82,7 @@ public class PaperService {
         log.info("[PaperService] ProblemList : {}", problemList.size());
 
         for (ProblemForm form : problemList) {
-            String type = form.getProblemType();
-            // 적절한 타입으로 생성해서 넣어주어야 함
-            Problem problem = problemFactory.createProblem(form);
-            ProblemRepository<? extends Problem> problemRepository = problemRepoFactory.createRepository(form.getProblemType());
-
+            Problem problem = Problem.toEntity(form);
             Image image = null;
 
              /*
@@ -97,20 +96,8 @@ public class PaperService {
 
             log.info("[PaperService] Problem : {}", problem);
 
-            switch (type) {
-                case "CHOICE":
-                    ChoiceProblemRepository choiceRepo = (ChoiceProblemRepository) problemRepository;
-                    ChoiceProblem choiceProblem = choiceRepo.save((ChoiceProblem) problem);
-                    paper.addProblem(choiceProblem);
-                    break;
-                case "ESSAY":
-                    EssayProblemRepository essayRepo = (EssayProblemRepository) problemRepository;
-                    EssayProblem essayProblem = essayRepo.save((EssayProblem) problem);
-                    paper.addProblem(essayProblem);
-                    break;
-                default:
-                    throw new IllegalArgumentException("존재하지 않거나 잘못된 타입이 입력되었습니다.");
-            }
+            Problem saveProblem = problemRepository.save(problem);
+            paper.addProblem(saveProblem);
         }
     }
 
@@ -131,11 +118,8 @@ public class PaperService {
         log.info("[PaperService] UploadImage : {}", uploadFiles.stream().toString());
 
         for (ProblemForm form : problemList) {
-            String type = form.getProblemType();
 
             // 해당 문제를 찾아서 수정 처리를 해주어야 함
-            ProblemService<? extends Problem> problemService = problemServiceFactory.createService(form.getProblemType());
-
             Image image = null;
 
             /*
@@ -145,18 +129,7 @@ public class PaperService {
             if (form.getImageMetaInfo().isHasImage())
                 image = imageService.saveImage(uploadFiles.get(imageIndex++));
 
-            switch (type) {
-                case "CHOICE":
-                    ChoiceProblemService choiceRepo = (ChoiceProblemService) problemService;
-                    choiceRepo.updateProblem(form, image, paperId);
-                    break;
-                case "ESSAY":
-                    EssayProblemService essayRepo = (EssayProblemService) problemService;
-                    essayRepo.updateProblem(form, image, paperId);
-                    break;
-                default:
-                    throw new IllegalArgumentException("존재하지 않거나 잘못된 타입이 입력되었습니다.");
-            }
+            problemService.updateProblem(form, image, paperId);
         }
     }
 
@@ -172,7 +145,7 @@ public class PaperService {
     /**
      * 문제지 채점 수행
      */
-    public MarkingPaper markingPaper(Long paperId, List<String> answerList) {
+    public MarkingPaper markingPaper(Long paperId, List<SubmitAnswer> answerList) {
         Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
         List<Problem> problemList = paper.getProblemList();
         List<MarkingProblem> markingProblemList = new ArrayList<>();
@@ -183,8 +156,7 @@ public class PaperService {
 
         for(int i = 0; i < problemList.size(); i++) {
             Problem problem = problemList.get(i);
-            ProblemService<? extends Problem> service = problemServiceFactory.createService(problem.getClass());
-            MarkingProblem markResult = service.markingProblem(problem.getId(), answerList.get(i));
+            MarkingProblem markResult = problemService.markingProblem(problem.getId(), Answer.toEntity(answerList.get(i)));
 
             if (markResult.isCorrect()) {
                 rightCount += 1;
@@ -210,4 +182,7 @@ public class PaperService {
     }
 
 
+    public List<Paper> getPaperList() {
+        return paperRepository.findAll();
+    }
 }
