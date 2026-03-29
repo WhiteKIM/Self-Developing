@@ -16,10 +16,13 @@ import whitekim.self_developing.model.Image;
 import whitekim.self_developing.model.Page;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.problem.Answer;
+import whitekim.self_developing.model.problem.GradingStrategy;
 import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.repository.PageRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
+import whitekim.self_developing.service.factory.ProblemStrategyFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public class PaperService {
     private final ProblemService problemService;
     private final VoteService voteService;
     private final ImageService imageService;
+    private final ProblemStrategyFactory strategyFactory;
 
     /**
      * 시험지를 등록합니다.
@@ -82,21 +86,21 @@ public class PaperService {
         log.info("[PaperService] ProblemList : {}", problemList.size());
 
         for (ProblemForm form : problemList) {
-            Problem problem = Problem.toEntity(form);
+            ProblemEntity problem = ProblemEntity.toEntity(form);
             Image image = null;
 
              /*
               이미지 추가/변경 처리
               추가된 이미지 정보가 있다면 가져온 후 인덱스 증가
              */
-            if (form.getImageMetaInfo().isHasImage())
+            if (form.getImageMetaInfo() != null && form.getImageMetaInfo().isHasImage())
                 image = imageService.saveImage(uploadFiles.get(imageIndex++));
 
             problem.attachImage(image);
 
             log.info("[PaperService] Problem : {}", problem);
 
-            Problem saveProblem = problemRepository.save(problem);
+            ProblemEntity saveProblem = problemRepository.save(problem);
             paper.addProblem(saveProblem);
         }
     }
@@ -115,7 +119,7 @@ public class PaperService {
             throw new NotFoundDataException("존재하지 않는 항목입니다.");
         }
 
-        log.info("[PaperService] UploadImage : {}", uploadFiles.stream().toString());
+        log.info("[PaperService] UploadImage : {}", uploadFiles.stream());
 
         for (ProblemForm form : problemList) {
 
@@ -126,7 +130,7 @@ public class PaperService {
               이미지 추가/변경 처리
               추가된 이미지 정보가 있다면 가져온 후 인덱스 증가
              */
-            if (form.getImageMetaInfo().isHasImage())
+            if (form.getImageMetaInfo() != null && form.getImageMetaInfo().isHasImage())
                 image = imageService.saveImage(uploadFiles.get(imageIndex++));
 
             problemService.updateProblem(form, image, paperId);
@@ -147,7 +151,7 @@ public class PaperService {
      */
     public MarkingPaper markingPaper(Long paperId, List<SubmitAnswer> answerList) {
         Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
-        List<Problem> problemList = paper.getProblemList();
+        List<ProblemEntity> problemList = paper.getProblemList();
         List<MarkingProblem> markingProblemList = new ArrayList<>();
 
         int rightCount = 0;
@@ -155,7 +159,7 @@ public class PaperService {
         int score = 0;
 
         for(int i = 0; i < problemList.size(); i++) {
-            Problem problem = problemList.get(i);
+            ProblemEntity problem = problemList.get(i);
             MarkingProblem markResult = problemService.markingProblem(problem.getId(), Answer.toEntity(answerList.get(i)));
 
             if (markResult.isCorrect()) {
@@ -184,5 +188,16 @@ public class PaperService {
 
     public List<Paper> getPaperList() {
         return paperRepository.findAll();
+    }
+
+    // Private 영역
+
+    private Problem toDomain(ProblemEntity entity) {
+        Problem problem = Problem.toDomain(entity);
+
+        GradingStrategy gradingStrategy = strategyFactory.createStrategy(entity.getStrategyType());
+        problem.setStrategy(gradingStrategy);
+
+        return problem;
     }
 }

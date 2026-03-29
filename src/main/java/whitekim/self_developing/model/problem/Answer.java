@@ -1,15 +1,14 @@
 package whitekim.self_developing.model.problem;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import whitekim.self_developing.dto.request.SubmitAnswer;
-import whitekim.self_developing.model.BaseEntity;
 
-@Entity
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-public class Answer extends BaseEntity {
+public class Answer {
     private String content;
     private String comment;
 

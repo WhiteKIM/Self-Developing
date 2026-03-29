@@ -7,6 +7,7 @@ import whitekim.self_developing.dto.request.SubmitAnswer;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.problem.Answer;
 import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.service.CertificationService;
 import whitekim.self_developing.service.ProblemService;
 
@@ -20,8 +21,8 @@ public class ProblemController {
     private final CertificationService certifcaitonService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Problem>> getProblemByPaper(@RequestParam Long paperId) {
-        List<Problem> problemList = problemService.findAllByPaper(paperId);
+    public ResponseEntity<List<ProblemEntity>> getProblemByPaper(@RequestParam Long paperId) {
+        List<ProblemEntity> problemList = problemService.findAllByPaper(paperId);
 
         return ResponseEntity.ok(problemList);
     }

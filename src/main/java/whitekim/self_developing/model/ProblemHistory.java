@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 
 @Entity
 @AllArgsConstructor
@@ -14,7 +14,7 @@ public class ProblemHistory extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "problem_id")
-    private Problem problem;
+    private ProblemEntity problem;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

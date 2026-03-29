@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.Member;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.service.PointService;
 import whitekim.self_developing.service.ProblemService;
 
@@ -43,7 +43,7 @@ public class PointRewardAspect {
         Member authMember = detailMember.getMember();
 
         // 문제 정보 조회
-        Problem problem = (Problem) problemService.getProblem(problemId).orElseThrow();
+        ProblemEntity problem = problemService.getProblem(problemId).orElseThrow();
 
         // 결과 불러오기
         if(result.isCorrect()) {

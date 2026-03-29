@@ -12,7 +12,7 @@ import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.ProblemHistory;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.service.ProblemHistoryService;
 import whitekim.self_developing.service.ProblemService;
 
@@ -40,7 +40,7 @@ public class ProblemSolvingAspect {
         Member authMember = detailMember.getMember();
 
         // 문제 정보 조회
-        Problem solvedProblem = (Problem) problemService.getProblem(solvingProblem.problemId()).orElseThrow();
+        ProblemEntity solvedProblem = problemService.getProblem(solvingProblem.problemId()).orElseThrow();
         
         // 문제 이력 생성
         historyService.createProblemHistory(new ProblemHistory(

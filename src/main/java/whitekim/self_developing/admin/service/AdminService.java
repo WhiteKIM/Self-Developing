@@ -26,7 +26,7 @@ import whitekim.self_developing.exception.PermissionDeniedException;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.enumerate.Permission;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.repository.MemberRepository;
 import whitekim.self_developing.service.PaperService;
 import whitekim.self_developing.service.ProblemService;
@@ -141,11 +141,11 @@ public class AdminService {
         return paperService.getPaperDetail(paperId);
     }
 
-    public List<Problem> selectProblemList() {
+    public List<ProblemEntity> selectProblemList() {
         return problemService.getProblemList();
     }
 
-    public Problem selectProblemDetail(Long problemId) {
+    public ProblemEntity selectProblemDetail(Long problemId) {
         return null;
     }
 }

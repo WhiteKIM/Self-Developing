@@ -8,6 +8,7 @@ import whitekim.self_developing.model.Log;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Point;
 import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.properties.PointProperties;
 import whitekim.self_developing.repository.LogRepository;
 import whitekim.self_developing.repository.PointRepository;
@@ -40,7 +41,7 @@ public class PointService {
      * @param member - 답안작성자
      * @param problem - 해결한 문제
      */
-    public void earnPoint(Member member, Problem problem) {
+    public void earnPoint(Member member, ProblemEntity problem) {
         Point memberPoint = member.getPoint();
 
         if(memberPoint == null) {

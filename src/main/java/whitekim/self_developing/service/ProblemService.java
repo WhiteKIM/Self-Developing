@@ -13,6 +13,7 @@ import whitekim.self_developing.model.Image;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.problem.Answer;
 import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
@@ -32,7 +33,7 @@ public class ProblemService {
     /**
      * 전체 문제 조회 로직
      */
-    public List<Problem> getProblemList() {
+    public List<ProblemEntity> getProblemList() {
         return problemRepository.findAll();
     }
 
@@ -42,7 +43,7 @@ public class ProblemService {
      * @param paperId
      * @return
      */
-    public List<Problem> findAllByPaper(Long paperId) {
+    public List<ProblemEntity> findAllByPaper(Long paperId) {
         Optional<Paper> optionalPaper = paperRepository.findById(paperId);
 
         if(optionalPaper.isEmpty()) {
@@ -50,7 +51,7 @@ public class ProblemService {
         }
 
         Paper paper = optionalPaper.get();
-        return (List<Problem>) paper.getProblemList();
+        return (List<ProblemEntity>) paper.getProblemList();
     }
 
     /**
@@ -58,7 +59,7 @@ public class ProblemService {
      * @param id - 조회할 문제 키
      * @return 조회한 문제
      */
-    public Optional<Problem> getProblem(Long id) {
+    public Optional<ProblemEntity> getProblem(Long id) {
         return problemRepository.findById(id);
     }
 
@@ -68,7 +69,7 @@ public class ProblemService {
      * @param certName - 지격증명
      * @return - 랜덤한 문제
      */
-    public Problem getRandomProblem(String certName) {
+    public ProblemEntity getRandomProblem(String certName) {
         Optional<Certification> optCert = certRepository.findByCertName(certName);
 
         if(optCert.isEmpty())
@@ -78,7 +79,7 @@ public class ProblemService {
 
         int index = (int) (Math.random() * size);
         PageRequest pageRequest = PageRequest.of(index, 1);
-        Page<Problem> problemPage = problemRepository.findAllByCertification(optCert.get(), pageRequest);
+        Page<ProblemEntity> problemPage = problemRepository.findAllByCertification(optCert.get(), pageRequest);
 
         return problemPage.getContent().getFirst();
     }
@@ -86,7 +87,7 @@ public class ProblemService {
     /**
      * 단건 문제 등록
      */
-    public void addProblem(Problem problem) {
+    public void addProblem(ProblemEntity problem) {
         problemRepository.save(problem);
     }
 
@@ -94,7 +95,7 @@ public class ProblemService {
      * 다건 문제 등록
      * @param problemList - 등록한 다건 문제
      */
-    public void addProblemList(List<Problem> problemList) {
+    public void addProblemList(List<ProblemEntity> problemList) {
         problemRepository.saveAll(problemList);
     }
 
@@ -102,14 +103,14 @@ public class ProblemService {
      * 단건 문제 수정
      * @param problem - 수정할 문제 내용
      */
-    public void updateProblem(Problem problem) {
-        Optional<Problem> optProblem = problemRepository.findById(problem.getId());
+    public void updateProblem(ProblemEntity problem) {
+        Optional<ProblemEntity> optProblem = problemRepository.findById(problem.getId());
 
         if(optProblem.isEmpty()) {
             throw new RuntimeException("존재하지 않는 문제입니다.");
         }
 
-        Problem Problem = optProblem.get();
+        ProblemEntity Problem = optProblem.get();
         Problem.update(problem);
     }
 
@@ -127,8 +128,8 @@ public class ProblemService {
      * 다건 문제 수정
      * @param problemList - 수정할 문제 내용
      */
-    public void updateProblemList(List<Problem> problemList) {
-        for(Problem problem : problemList) {
+    public void updateProblemList(List<ProblemEntity> problemList) {
+        for(ProblemEntity problem : problemList) {
             updateProblem(problem);
         }
     }
@@ -155,9 +156,10 @@ public class ProblemService {
      * 제출 답안 채점
      */
     public MarkingProblem markingProblem(Long problemId, Answer answer) {
-        Problem problem = problemRepository.findById(problemId).orElseThrow(NotExistProblemException::new);
+        ProblemEntity problem = problemRepository.findById(problemId).orElseThrow(NotExistProblemException::new);
 
-        return problem.mark(answer);
+        Problem domain = Problem.toDomain(problem);
+        return domain.mark(answer);
     }
 
     /**
@@ -174,7 +176,7 @@ public class ProblemService {
      * 사용자가 입력한 추천 정보를 반영한다.
      */
     public void addVote(Long id, String type) {
-        Problem Problem = problemRepository.findById(id).orElseThrow();
+        ProblemEntity Problem = problemRepository.findById(id).orElseThrow();
         Problem.addVote(voteService.addVote(type));
     }
 

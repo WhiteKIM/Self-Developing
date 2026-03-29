@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.model.enumerate.PaperType;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class Paper extends BaseEntity {
     private Page page;
 
     @OneToMany(mappedBy = "paper")
-    private List<Problem> problemList = new ArrayList<>();
+    private List<ProblemEntity> problemList = new ArrayList<>();
 
     @OneToMany
     @JoinColumn(name = "vote_id")
@@ -48,7 +48,7 @@ public class Paper extends BaseEntity {
         this.type = PaperType.valueOf(paperForm.getType());
     }
 
-    public void addProblem(Problem problem) {
+    public void addProblem(ProblemEntity problem) {
         problemList.add(problem);
         problem.appendedPaper(this);
     }

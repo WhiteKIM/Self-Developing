@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
+import whitekim.self_developing.model.enumerate.ProblemType;
 import whitekim.self_developing.model.problem.Answer;
-import whitekim.self_developing.model.problem.GradingStrategy;
+
+import java.util.List;
 
 /**
  * @author whitekim
@@ -20,7 +22,7 @@ import whitekim.self_developing.model.problem.GradingStrategy;
 public class ProblemForm {
     private Long id;                // 문제 ID - 수정 시 필요
     @NotBlank
-    private GradingStrategy problemStrategy;     // 문제 타입
+    private ProblemType type;     // 문제 타입
     @NotBlank
     private String title;           // 제목
     private String round;           // 회차
@@ -31,6 +33,8 @@ public class ProblemForm {
 
     @NotBlank
     private Answer answer;    // 정답
+
+    private List<String> keywordList;   // 객관식인 경우에만 유효
 
     private int score;              // 점수
     @Range(min = 0, max = 5)

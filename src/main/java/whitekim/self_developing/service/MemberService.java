@@ -16,7 +16,7 @@ import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.dto.response.MemberInfo;
 import whitekim.self_developing.exception.AlreadyExistsException;
 import whitekim.self_developing.model.*;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.model.relation.MemberFavoritePaper;
 import whitekim.self_developing.model.relation.MemberRecentPaper;
 import whitekim.self_developing.repository.*;
@@ -164,7 +164,7 @@ public class MemberService {
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
 
         for(SubmitProblem submitProblem : wrongProblemList) {
-            Problem problem = problemRepository.findById(submitProblem.getId()).orElseThrow();
+            ProblemEntity problem = problemRepository.findById(submitProblem.getId()).orElseThrow();
             loginMember.addWrongProblem(problem);
         }
     }

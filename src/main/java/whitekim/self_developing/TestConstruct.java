@@ -7,9 +7,10 @@ import whitekim.self_developing.dto.request.PageForm;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.model.Category;
+import whitekim.self_developing.model.enumerate.ProblemType;
+import whitekim.self_developing.model.problem.Answer;
 import whitekim.self_developing.service.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,16 +73,13 @@ public class TestConstruct {
 
         // 문제 등록
         ProblemForm problemForm = new ProblemForm();
-        problemForm.setProblemType("ESSAY");
+        problemForm.setType(ProblemType.SUBJECT);
         problemForm.setTitle("test");
         problemForm.setRound("4");
         problemForm.setSubject("test");
-        problemForm.setProblem("test");
-        problemForm.setSuggest(List.of("test"));
-        problemForm.setCategoryName("test");
-        problemForm.setAnswer(List.of("test"));
-        problemForm.setComment("test");
+        Answer answer = new Answer("test", "test");
+        problemForm.setAnswer(answer);
 
-        paperService.addProblem(1L, new ArrayList<>(), null);
+        paperService.addProblem(1L, List.of(problemForm), null);
     }
 }

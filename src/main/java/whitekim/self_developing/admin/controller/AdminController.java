@@ -11,7 +11,7 @@ import whitekim.self_developing.admin.model.MemberInfo;
 import whitekim.self_developing.admin.service.AdminService;
 import whitekim.self_developing.dto.request.LoginMember;
 import whitekim.self_developing.model.Paper;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -111,7 +111,7 @@ public class AdminController {
 
     @GetMapping("/problem/management")
     public String adminManagementProblem(Model model) {
-        List<? extends Problem> problemList = adminService.selectProblemList();
+        List<ProblemEntity> problemList = adminService.selectProblemList();
 
         model.addAttribute("content", "problem/problemManagement :: body");
         model.addAttribute("problemList", problemList);
@@ -121,7 +121,7 @@ public class AdminController {
 
     @GetMapping("/problem/management/detail")
     public String adminManagerProblemDetail(@RequestParam Long problemId, Model model) {
-        Problem problem = adminService.selectProblemDetail(problemId);
+        ProblemEntity problem = adminService.selectProblemDetail(problemId);
 
         model.addAttribute("content", "problem/problemManagementDetail");
         model.addAttribute("problem", problem);

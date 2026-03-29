@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import whitekim.self_developing.dto.response.MemberDetail;
 import whitekim.self_developing.model.enumerate.Permission;
-import whitekim.self_developing.model.problem.Problem;
+import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.model.relation.MemberFavoritePaper;
 import whitekim.self_developing.model.relation.MemberRecentPaper;
 
@@ -28,7 +28,7 @@ public class Member extends BaseEntity {
 
     @OneToMany
     @JoinColumn(name = "problem_id")
-    private List<Problem> wrongList = new ArrayList<>();      // 오답리스트
+    private List<ProblemEntity> wrongList = new ArrayList<>();      // 오답리스트
 
     @OneToMany(mappedBy = "member")
     private List<MemberRecentPaper> recentList = new ArrayList<>();     // 최근진행내역
@@ -89,7 +89,7 @@ public class Member extends BaseEntity {
      * 틀린 문제를 리스트에 추가
      * @param problemList - 틀린 문제 정보
      */
-    public void addWrongList(List<? extends Problem> problemList) {
+    public void addWrongList(List<ProblemEntity> problemList) {
         wrongList.addAll(problemList);
     }
 
@@ -128,7 +128,7 @@ public class Member extends BaseEntity {
         wrongPasswordCount+=1;
     }
 
-    public void addWrongProblem(Problem problem) {
+    public void addWrongProblem(ProblemEntity problem) {
         wrongList.add(problem);
     }
 
