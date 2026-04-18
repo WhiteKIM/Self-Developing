@@ -53,7 +53,6 @@ public class Paper extends BaseEntity {
         problem.appendedPaper(this);
     }
 
-
     public void registerPage(Page page) {
         this.page = page;
     }

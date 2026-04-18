@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.request.SubmitAnswer;
+import whitekim.self_developing.dto.response.DetailPaperForm;
 import whitekim.self_developing.dto.response.MarkingPaper;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.service.MemberService;
@@ -33,8 +34,8 @@ public class PaperController {
     }
 
     @GetMapping("/v1/detail")
-    public ResponseEntity<Paper> getDetailPaper(@RequestParam("id") Long id) {
-        Paper paper = paperService.getPaperDetail(id);
+    public ResponseEntity<DetailPaperForm> getDetailPaper(@RequestParam("id") Long id) {
+        DetailPaperForm paper = paperService.getPaperDetail(id);
 
         return ResponseEntity.ok(paper);
     }

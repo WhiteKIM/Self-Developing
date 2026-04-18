@@ -44,10 +44,16 @@ public class Problem {
      */
     public static Problem toDomain(ProblemEntity form) {
         return Problem.builder()
+                .problemId(form.getId())
                 .title(form.getTitle())
                 .round(form.getRound())
                 .subject(form.getSubject())
                 .problemContent(form.getProblemContent())
+                .certification(form.getCertification())
+                .image(form.getImage())
+                .paper(form.getPaper())
+                .voteList(form.getVoteList())
+                .tagList(form.getTagList())
                 .answer(form.getAnswer())
                 .score(form.getScore())
                 .difficulty(form.getDifficulty())

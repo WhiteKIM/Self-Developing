@@ -51,6 +51,7 @@ public class ProblemEntity extends BaseEntity {
     private List<Tag> tagList = new ArrayList<>();
 
     // 키워드값
+    @Builder.Default
     private List<String> keywordList = new ArrayList<>();
 
     @Min(value = 0L)
@@ -80,6 +81,7 @@ public class ProblemEntity extends BaseEntity {
                 .score(form.getScore())
                 .difficulty(form.getDifficulty())
                 .strategyType(form.getType().toString())
+                .keywordList(form.getKeywordList())
                 .build();
     }
 
@@ -96,6 +98,7 @@ public class ProblemEntity extends BaseEntity {
         this.answer = updateProblem.getAnswer();
         this.score = updateProblem.getScore();
         this.difficulty = updateProblem.getDifficulty();
+        this.keywordList = updateProblem.getKeywordList();
     }
 
     /**
@@ -116,5 +119,9 @@ public class ProblemEntity extends BaseEntity {
 
     public void cancelVote(Vote vote) {
         this.voteList.remove(vote);
+    }
+
+    public void updatePaperInfo(Paper paper) {
+        this.paper = paper;
     }
 }

@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.NotSupportedException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,6 +53,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        String method = request.getMethod();
+
+        if(method.equals("OPTIONS")) {
+            throw new NotSupportedException("지원하지 않는 메소드 정보");
+        }
+
         LoginMember loginMember = objectMapper.readValue(request.getInputStream(), LoginMember.class);
 
         log.info("[JwtAuthenticateFilter] request : " + request.getRequestURI());

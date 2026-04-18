@@ -17,7 +17,7 @@ public class ChoiceGradingStrategy implements GradingStrategy{
 
     @Override
     public boolean grade(Answer correctAnswer, Answer userAnswer) {
-        return false;
+        return correctAnswer.getContent().equals(userAnswer.getContent());
     }
 
     @Override

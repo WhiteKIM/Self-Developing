@@ -10,6 +10,7 @@ import whitekim.self_developing.admin.model.MainStatInfo;
 import whitekim.self_developing.admin.model.MemberInfo;
 import whitekim.self_developing.admin.service.AdminService;
 import whitekim.self_developing.dto.request.LoginMember;
+import whitekim.self_developing.dto.response.DetailPaperForm;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.problem.ProblemEntity;
 
@@ -99,7 +100,7 @@ public class AdminController {
 
     @GetMapping("/paper/management/detail")
     public String adminManagementPaper(@RequestParam Long paperId, Model model) {
-        Paper paper = adminService.selectPaperDetail(paperId);
+        DetailPaperForm paper = adminService.selectPaperDetail(paperId);
 
         model.addAttribute("content", "paper/paperManagementDetail :: body");
         model.addAttribute("paper", paper);

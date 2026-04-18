@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.request.SubmitAnswer;
+import whitekim.self_developing.dto.response.DetailPaperForm;
 import whitekim.self_developing.dto.response.MarkingPaper;
 import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotExistPaperException;
@@ -119,8 +120,6 @@ public class PaperService {
             throw new NotFoundDataException("존재하지 않는 항목입니다.");
         }
 
-        log.info("[PaperService] UploadImage : {}", uploadFiles.stream());
-
         for (ProblemForm form : problemList) {
 
             // 해당 문제를 찾아서 수정 처리를 해주어야 함
@@ -133,23 +132,26 @@ public class PaperService {
             if (form.getImageMetaInfo() != null && form.getImageMetaInfo().isHasImage())
                 image = imageService.saveImage(uploadFiles.get(imageIndex++));
 
-            problemService.updateProblem(form, image, paperId);
+            problemService.updateProblem(form, image, optPaper.get());
         }
     }
 
-    public Paper getPaperDetail(Long id) {
+    public DetailPaperForm getPaperDetail(Long id) {
         Optional<Paper> optionalPaper = paperRepository.findById(id);
 
         if(optionalPaper.isEmpty())
             throw new RuntimeException("Not Exist Data");
 
-        return optionalPaper.get();
+        Paper paper = optionalPaper.get();
+
+        return DetailPaperForm.toDto(paper);
     }
 
     /**
      * 문제지 채점 수행
      */
     public MarkingPaper markingPaper(Long paperId, List<SubmitAnswer> answerList) {
+        log.info("[문제] 채점 시작");
         Paper paper = paperRepository.findById(paperId).orElseThrow(NotExistPaperException::new);
         List<ProblemEntity> problemList = paper.getProblemList();
         List<MarkingProblem> markingProblemList = new ArrayList<>();
@@ -171,6 +173,8 @@ public class PaperService {
 
             markingProblemList.add(markResult);
         }
+
+        log.info("[문제] 채점 결과 | 정답 : {} 오답 : {} 점수 : {}", rightCount, wrongCount, score);
 
         return new MarkingPaper(paper.getTitle(), paper.getTitle(), score, rightCount, wrongCount, LocalDateTime.now(), markingProblemList);
     }

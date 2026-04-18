@@ -10,7 +10,7 @@ import whitekim.self_developing.model.enumerate.ProblemType;
 public class SubjectGradingStrategy implements GradingStrategy{
     @Override
     public boolean grade(Answer correctAnswer, Answer userAnswer) {
-        return false;
+        return correctAnswer.getContent().equals(userAnswer.getContent());
     }
 
     @Override

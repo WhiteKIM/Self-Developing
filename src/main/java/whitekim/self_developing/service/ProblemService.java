@@ -2,6 +2,7 @@ package whitekim.self_developing.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -12,11 +13,13 @@ import whitekim.self_developing.model.Certification;
 import whitekim.self_developing.model.Image;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.problem.Answer;
+import whitekim.self_developing.model.problem.GradingStrategy;
 import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.repository.CertRepository;
 import whitekim.self_developing.repository.PaperRepository;
 import whitekim.self_developing.repository.ProblemRepository;
+import whitekim.self_developing.service.factory.ProblemStrategyFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,11 +27,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ProblemService {
     private final ProblemRepository problemRepository;
     private final CertRepository certRepository;
     private final PaperRepository paperRepository;
     private final VoteService voteService;
+    private final ProblemStrategyFactory strategyFactory;
 
     /**
      * 전체 문제 조회 로직
@@ -118,10 +123,26 @@ public class ProblemService {
      * 단건 문제 수정
      * @param form - 수정할 문제 정보
      * @param image - 첨부이미지
-     * @param paperId - 해당 문제집 ID
+     * @param paperEntity - 해당 문제집
      */
-    public void updateProblem(ProblemForm form, Image image, Long paperId) {
+    public void updateProblem(ProblemForm form, Image image, Paper paperEntity) {
+        ProblemEntity problem = ProblemEntity.toEntity(form);
 
+        if(image != null) {
+            problem.attachImage(image);
+        }
+
+        log.info("[ProblemService] Problem Info : {}", form);
+
+        if(form.getId() != null) {
+            ProblemEntity updateProblem = problemRepository.findById(form.getId()).orElseThrow();
+            updateProblem.update(problem);
+
+        } else {
+            problem.updatePaperInfo(paperEntity);
+
+            problemRepository.save(problem);
+        }
     }
 
     /**
@@ -156,10 +177,18 @@ public class ProblemService {
      * 제출 답안 채점
      */
     public MarkingProblem markingProblem(Long problemId, Answer answer) {
+        log.info("[문제 제출답안 채점] 문제 ID : {}, 제출 답안 : {}", problemId, answer.getContent());
         ProblemEntity problem = problemRepository.findById(problemId).orElseThrow(NotExistProblemException::new);
 
         Problem domain = Problem.toDomain(problem);
-        return domain.mark(answer);
+        GradingStrategy gradingStrategy = strategyFactory.createStrategy(problem.getStrategyType());
+        domain.setStrategy(gradingStrategy);
+
+        MarkingProblem marked = domain.mark(answer);
+
+        log.info("[문제 채점 결과] {}", marked.toString());
+
+        return marked;
     }
 
     /**

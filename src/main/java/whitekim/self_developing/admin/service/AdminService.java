@@ -22,6 +22,7 @@ import whitekim.self_developing.admin.model.stat.DiffProblemStatInfo;
 import whitekim.self_developing.admin.model.stat.MemberStatInfo;
 import whitekim.self_developing.admin.model.stat.ProblemStatInfo;
 import whitekim.self_developing.dto.request.LoginMember;
+import whitekim.self_developing.dto.response.DetailPaperForm;
 import whitekim.self_developing.exception.PermissionDeniedException;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
@@ -137,7 +138,7 @@ public class AdminService {
         return paperService.getPaperList();
     }
 
-    public Paper selectPaperDetail(Long paperId) {
+    public DetailPaperForm selectPaperDetail(Long paperId) {
         return paperService.getPaperDetail(paperId);
     }
 
