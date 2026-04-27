@@ -3,6 +3,7 @@ package whitekim.self_developing.dto.response;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.enumerate.Permission;
+import whitekim.self_developing.model.problem.Problem;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,9 +16,10 @@ public record MemberInfo(
         int wrongPasswordCount,
         List<Paper> favoriteList,
         List<Paper> recentList,
+        List<Problem> recentProblem,
         BigDecimal point
 ) {
-    public static MemberInfo from(Member member, List<Paper> favoriteList, List<Paper> recentList) {
+    public static MemberInfo from(Member member, List<Paper> favoriteList, List<Paper> recentList, List<Problem> problemList) {
         return new MemberInfo(
                 member.getUsername(),
                 member.getPassword(),
@@ -27,6 +29,7 @@ public record MemberInfo(
                 // Lazy 로딩 문제 방지를 위해 복사(List.of(...) or stream)
                 favoriteList,
                 recentList,
+                problemList,
                 member.getPoint().getPointQuantity()
         );
     }

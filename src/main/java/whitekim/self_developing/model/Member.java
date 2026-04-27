@@ -81,7 +81,7 @@ public class Member extends BaseEntity {
      * 즐겨찾기에서 해당 대상 제거
      * @param paper - 제거할 문제집 정보
      */
-    public void removeFavorite(Paper paper) {
+    public void removeFavorite(MemberFavoritePaper paper) {
         favoriteList.remove(paper);
     }
 

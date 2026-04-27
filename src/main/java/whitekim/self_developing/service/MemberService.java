@@ -15,7 +15,11 @@ import whitekim.self_developing.dto.request.SubmitProblem;
 import whitekim.self_developing.dto.request.UpdateMember;
 import whitekim.self_developing.dto.response.MemberInfo;
 import whitekim.self_developing.exception.AlreadyExistsException;
-import whitekim.self_developing.model.*;
+import whitekim.self_developing.model.Log;
+import whitekim.self_developing.model.Member;
+import whitekim.self_developing.model.Paper;
+import whitekim.self_developing.model.Point;
+import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.model.relation.MemberFavoritePaper;
 import whitekim.self_developing.model.relation.MemberRecentPaper;
@@ -69,15 +73,17 @@ public class MemberService {
      * @param member - 로그인 정보
      */
     public MemberInfo getMemberDetail(Member member) {
+        log.info("[MemberService] 사용자 정보 조회");
+        
         Member targetMember = memberRepository.findById(member.getId()).orElseThrow();
 
-        List<Long> recentPaperIdList = targetMember.getRecentList().stream().map(BaseEntity::getId).toList();
-        List<Long> favoritePaperIdList = targetMember.getFavoriteList().stream().map(BaseEntity::getId).toList();
+        List<Paper> recentList = targetMember.getRecentList().stream().map(MemberRecentPaper::getPaper).toList();
+        List<Paper> favortieList = targetMember.getFavoriteList().stream().map(MemberFavoritePaper::getPaper).toList();
+        List<Problem> problemList = targetMember.getProblemHistoryList().stream().map(
+                item -> Problem.toDomain(item.getProblem())
+        ).toList();
 
-        List<Paper> recentList = paperRepository.findAllById(recentPaperIdList);
-        List<Paper> favortieList = paperRepository.findAllById(favoritePaperIdList);
-
-        return MemberInfo.from(targetMember, favortieList, recentList);
+        return MemberInfo.from(targetMember, favortieList, recentList, problemList);
     }
 
     /**
@@ -113,11 +119,11 @@ public class MemberService {
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
+        log.info("[PaperService] 즐겨찾기 추가 사용자 정보 {} 시험정보 {}", loginMember, paper);
+
         MemberFavoritePaper favoritePaper = new MemberFavoritePaper(loginMember, paper);
-
-        favoritePaper = favoriteRepository.save(favoritePaper);
-
         loginMember.addFavorite(favoritePaper);
+        favoriteRepository.save(favoritePaper);
     }
 
     /**
@@ -133,7 +139,10 @@ public class MemberService {
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
-        loginMember.removeFavorite(paper);
+        MemberFavoritePaper deleteFav = favoriteRepository.findByMemberAndPaper(loginMember, paper);
+        favoriteRepository.deleteById(deleteFav.getId());
+
+        loginMember.removeFavorite(deleteFav);
     }
 
     /**
@@ -144,6 +153,9 @@ public class MemberService {
         PrincipalMember userDetails = (PrincipalMember) AuthUtils.getAuthentication();
         Long loginMemberId = userDetails.getId();
 
+        log.info("[MemberService] 현재 사용자 정보 : {}", userDetails);
+        log.info("[MemberService] 최근 문제 등록 : {}", paperId);
+        
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(RuntimeException::new);
         Paper paper = paperRepository.findById(paperId).orElseThrow(RuntimeException::new);
 
@@ -151,6 +163,8 @@ public class MemberService {
         recentPaper = recentRepository.save(recentPaper);
 
         loginMember.addRecentPaper(recentPaper);
+        
+        log.info("[MemberService] 문제 이력 등록 성공");
     }
 
     /**
@@ -234,9 +248,10 @@ public class MemberService {
     public List<Paper> getMemberFavoriteList(Long id) {
         Member member = memberRepository.findMemberWithFavoriteList(id).orElseThrow();
 
-        List<Long> favoritePaperIdList = member.getFavoriteList().stream().map(BaseEntity::getId).toList();
+        List<Paper> favoritePaperList = member.getFavoriteList().stream().map(MemberFavoritePaper::getPaper).toList();
+        log.info("[MemberService] 사용자 최근이력 : {}", favoritePaperList);
 
-        return paperRepository.findAllById(favoritePaperIdList);
+        return favoritePaperList;
     }
 
     /**
@@ -245,11 +260,14 @@ public class MemberService {
      * @return 최근 문제집 내역
      */
     public List<Paper> getMemberRecentList(Long id) {
+        log.info("[MemberService] 최근 이력 조회");
+
         Member member = memberRepository.findMemberWithRecentList(id).orElseThrow();
+        List<Paper> recentPaperIdList = member.getRecentList().stream().map(MemberRecentPaper::getPaper).toList();
 
-        List<Long> recentPaperIdList = member.getRecentList().stream().map(BaseEntity::getId).toList();
+        log.info("[MemberService] 사용자 최근이력 : {}", recentPaperIdList);
 
-        return paperRepository.findAllById(recentPaperIdList);
+        return recentPaperIdList;
     }
 
     /**
