@@ -3,8 +3,11 @@ package whitekim.self_developing.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.PaperForm;
 import whitekim.self_developing.dto.request.ProblemForm;
 import whitekim.self_developing.dto.request.SubmitAnswer;
@@ -14,6 +17,7 @@ import whitekim.self_developing.dto.response.MarkingProblem;
 import whitekim.self_developing.exception.NotExistPaperException;
 import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.Image;
+import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Page;
 import whitekim.self_developing.model.Paper;
 import whitekim.self_developing.model.problem.Answer;
@@ -49,13 +53,17 @@ public class PaperService {
      */
     public Long registerPaper(Long pageId, PaperForm paper) {
         log.info("[PaperService] PageId : {}", pageId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PrincipalMember authPrincipalMember = (PrincipalMember) authentication.getPrincipal();
+        Member loginMember = authPrincipalMember.getMember();
 
         Page page = pageRepository.findById(pageId).orElseThrow();
-        Paper savePage = paperRepository.save(new Paper(paper));
+        Paper savePaper = paperRepository.save(new Paper(paper, loginMember));
 
-        page.addPaper(savePage);
+        page.addPaper(savePaper);
+        loginMember.addPaper(savePaper);
 
-        return savePage.getId();
+        return savePaper.getId();
     }
 
     public List<Paper> getPaperList(Long pageId) {
@@ -143,8 +151,9 @@ public class PaperService {
             throw new RuntimeException("Not Exist Data");
 
         Paper paper = optionalPaper.get();
+        Member authMember = paper.getMember();
 
-        return DetailPaperForm.toDto(paper);
+        return DetailPaperForm.toDto(paper, authMember);
     }
 
     /**

@@ -1,13 +1,17 @@
 package whitekim.self_developing.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import whitekim.self_developing.auth.PrincipalMember;
 import whitekim.self_developing.dto.request.PageForm;
 import whitekim.self_developing.dto.response.DetailPageForm;
 import whitekim.self_developing.exception.NotFoundDataException;
 import whitekim.self_developing.model.Category;
 import whitekim.self_developing.model.Certification;
+import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Page;
 import whitekim.self_developing.model.enumerate.PageType;
 import whitekim.self_developing.repository.CategoryRepository;
@@ -34,18 +38,23 @@ public class PageService {
             category = Optional.of(categoryRepository.save(new Category(pageForm.getCategory())));
         }
 
-
         if(cert.isEmpty()) {
             cert = Optional.of(certRepository.save(Certification.builder().certName(pageForm.getCertification()).build()));
         }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PrincipalMember authPrincipalMember = (PrincipalMember) authentication.getPrincipal();
+        Member loginMember = authPrincipalMember.getMember();
 
         Page page = Page.builder()
                 .pageType(PageType.valueOf(pageForm.getPageType()))
                 .certification(cert.get())
                 .category(category.get())
+                .member(loginMember)
                 .build();
 
-        pageRepository.save(page);
+        Page savePage = pageRepository.save(page);
+        loginMember.addPage(savePage);
     }
 
     public DetailPageForm getDetailPage(Long id) {

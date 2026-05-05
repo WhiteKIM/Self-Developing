@@ -32,6 +32,11 @@ public class Paper extends BaseEntity {
     @JsonIgnore
     private Page page;
 
+    // 작성한 사용자
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @OneToMany(mappedBy = "paper")
     private List<ProblemEntity> problemList = new ArrayList<>();
 
@@ -43,9 +48,10 @@ public class Paper extends BaseEntity {
     @JoinColumn(name = "tag_id")
     private List<Tag> tagList = new ArrayList<>();
 
-    public Paper(PaperForm paperForm) {
+    public Paper(PaperForm paperForm, Member writer) {
         this.title = paperForm.getTitle();
         this.type = PaperType.valueOf(paperForm.getType());
+        this.member = writer;
     }
 
     public void addProblem(ProblemEntity problem) {

@@ -37,6 +37,14 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "problem_history_id")
     private List<ProblemHistory> problemHistoryList = new ArrayList<>();   // 최근 해결문제
 
+    // 작성 시험지
+    @OneToMany(mappedBy = "member")
+    private List<Paper> paperList = new ArrayList<>();
+
+    // 작성 카테고리
+    @OneToMany(mappedBy = "member")
+    private List<Page> pageList = new ArrayList<>();
+
     @Builder.Default
     private Permission permission = Permission.USER;        // 사용자권한(기본값 : 사용자)
 
@@ -59,6 +67,16 @@ public class Member extends BaseEntity {
     private Boolean isAvailableAccount;
     private LocalDateTime latestAccessTime;
 
+    public MemberDetail toDto() {
+        return new MemberDetail(
+                this.username,
+                password,
+                email,
+                permission,
+                wrongPasswordCount
+        );
+    }
+    
     /**
      * 비밀번호 암호화 적용
      * @param encPassword - 인코딩된 패스워드
@@ -66,7 +84,7 @@ public class Member extends BaseEntity {
     public void encryptPassword(String encPassword) {
         this.password = encPassword;
     }
-    
+
     /**
      * 즐겨찾기에 대상을 추가
      * @param paper - 추가할 문제집 정보
@@ -145,13 +163,23 @@ public class Member extends BaseEntity {
         problemHistoryList.add(history);
     }
 
-    public MemberDetail toDto() {
-        return new MemberDetail(
-                username,
-                password,
-                email,
-                permission,
-                wrongPasswordCount
-        );
+    // 생성한 시험 이력 추가
+    public void addPaper(Paper paper) {
+        this.paperList.add(paper);
+    }
+
+    // 시험 이력 삭제
+    public void removePaper(Paper paper) {
+        this.paperList.remove(paper);
+    }
+
+    // 시험화면 이력 추가
+    public void addPage(Page page) {
+        this.pageList.add(page);
+    }
+
+    // 시험화면 이력 제거
+    public void removePage(Page page) {
+        this.pageList.remove(page);
     }
 }

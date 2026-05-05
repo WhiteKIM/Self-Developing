@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import whitekim.self_developing.model.Log;
 import whitekim.self_developing.model.Member;
 import whitekim.self_developing.model.Point;
-import whitekim.self_developing.model.problem.Problem;
 import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.properties.PointProperties;
 import whitekim.self_developing.repository.LogRepository;
@@ -22,7 +21,6 @@ import java.time.LocalDateTime;
 @Slf4j
 public class PointService {
     private final PointRepository pointRepository;
-    private final PointProperties pointProperties;
     private final LogRepository logRepository;
 
     /**
@@ -50,11 +48,8 @@ public class PointService {
             memberPoint = newPoint;
         }
 
-        // 다른 엔티티에 트랜잭션이 아닌곳에 접근하면 안돼요
-        //this.logList.add(new Log("Point", "create", "pay a Point"));
-
         // 일단 문제 난이도에 비례하여 포인트를 지급한다.
-        long pointRate = pointProperties.getPayRate();
+        long pointRate = PointProperties.payRate;
 
         // 포인트 지급방식 = 문제 난이도 * 포인트 지급비율
 
@@ -74,24 +69,15 @@ public class PointService {
                 .method("earnPoint")
                 .message(
                         String.format("%s : %s 사용자가 %d 문제를 해결하여 %s 포인트를 획득하였습니다.",
-                                LocalDateTime.now().toString(),
+                                LocalDateTime.now(),
                                 member.getUsername(),
                                 problem.getId(),
-                                rewardPoint.toString()
+                                rewardPoint
                         )
                 )
                 .targetId(savePoint.getId())
                 .build();
 
         logRepository.save(log);
-    }
-
-    /**
-     * 문제 해결에 대한 포인트 지급 기능
-     * 포인트는 문제 난이도와 지급율에 비례하여 지급됨
-     * @param problem - 포인트 지급대상 문제 정보
-     */
-    private void payPoint(Problem problem) {
-
     }
 }

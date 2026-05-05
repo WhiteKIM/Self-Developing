@@ -1,6 +1,8 @@
 package whitekim.self_developing.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,6 +23,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import whitekim.self_developing.auth.entry.JwtAuthenticationEntryPoint;
+import whitekim.self_developing.jwt.JwtUtils;
 import whitekim.self_developing.jwt.filter.JwtAuthenticationFilter;
 import whitekim.self_developing.jwt.filter.JwtAuthorizationFilter;
 import whitekim.self_developing.model.enumerate.Permission;
@@ -61,6 +65,24 @@ public class WebSecurityConfig {
 
     @Bean
     @Order(2)
+    public SecurityFilterChain publicApiChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher(
+                        "/api/login/**",
+                        "/api/register/**",
+                        "/api/member/join"
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(3)
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthorizationFilter jwtAuthorizationFilter, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
@@ -71,9 +93,7 @@ public class WebSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                        .requestMatchers("/script/**").permitAll()      // 스크립트
-                        .requestMatchers("/css/**").permitAll()         // CSS
-                        .anyRequest().permitAll())
+                        .anyRequest().hasAnyRole(String.valueOf(Permission.ADMIN), String.valueOf(Permission.USER)))
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter,
@@ -100,5 +120,33 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter(JwtUtils jwtUtils, UserDetailsService userDetailsService) {
+        return new JwtAuthorizationFilter(jwtUtils, userDetailsService);
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtAuthorizationFilter> jwtAuthorizationFilterRegistration(
+            JwtAuthorizationFilter filter
+    ) {
+        FilterRegistrationBean<JwtAuthorizationFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationManager authenticationManager,JwtUtils jwtUtils, ObjectMapper objectMapper) {
+        return new JwtAuthenticationFilter(authenticationManager, jwtUtils, objectMapper);
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration(
+            JwtAuthenticationFilter filter
+    ) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 }
