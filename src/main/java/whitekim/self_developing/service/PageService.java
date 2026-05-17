@@ -54,7 +54,6 @@ public class PageService {
                 .build();
 
         Page savePage = pageRepository.save(page);
-        loginMember.addPage(savePage);
     }
 
     public DetailPageForm getDetailPage(Long id) {

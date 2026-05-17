@@ -36,10 +36,10 @@ public class ProblemForm {
 
     private List<String> keywordList;   // 객관식인 경우에만 유효
 
-    @Range(min = 0, max = 5)
+    @Range(min = 1)
     private int score;              // 점수
-    @Range(min = 0, max = 5)
-    private int difficulty;         // 난이도
+    @Range(min = 1, max = 5)
+    private int difficulty = 1;         // 난이도
 
     private String status;          // 상태여부(U, D)
     

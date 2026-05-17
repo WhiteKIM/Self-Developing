@@ -1,5 +1,6 @@
 package whitekim.self_developing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,9 +17,11 @@ public class ProblemHistory extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "problem_id")
+    @JsonIgnore
     private ProblemEntity problem;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 }

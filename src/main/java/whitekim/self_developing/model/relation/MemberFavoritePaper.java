@@ -1,5 +1,6 @@
 package whitekim.self_developing.model.relation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,9 +19,11 @@ import whitekim.self_developing.model.Paper;
 public class MemberFavoritePaper extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 
     @ManyToOne
     @JoinColumn(name = "paper_id")
+    @JsonIgnore
     private Paper paper;
 }

@@ -1,6 +1,7 @@
 package whitekim.self_developing.model.relation;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,9 +19,11 @@ import whitekim.self_developing.model.Paper;
 @AllArgsConstructor
 public class MemberRecentPaper extends BaseEntity {
     @ManyToOne
+    @JsonIgnore
     private Member member;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "paper_id")
     private Paper paper;
 }

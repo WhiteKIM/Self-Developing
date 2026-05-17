@@ -42,6 +42,7 @@ public class MemberService {
     private final FavoriteRepository favoriteRepository;
     private final RecentRepository recentRepository;
     private final LogRepository logRepository;
+    private final ProblemHistoryRepository problemHistoryRepository;
 
     /**
      * 사용자정보 최초 생성
@@ -162,6 +163,10 @@ public class MemberService {
         MemberRecentPaper recentPaper = new MemberRecentPaper(loginMember, paper);
         recentPaper = recentRepository.save(recentPaper);
 
+        if(loginMember.getRecentList().size() + 1 > 10) {
+            loginMember.getRecentList().removeFirst();
+        }
+
         loginMember.addRecentPaper(recentPaper);
         
         log.info("[MemberService] 문제 이력 등록 성공");
@@ -276,8 +281,12 @@ public class MemberService {
      * @return - 로그내역
      */
     public List<Log> getMemberPointHistory(Long id) {
-//        Member member = memberRepository.findById(id).orElseThrow();
+        Member member = memberRepository.findById(id).orElseThrow();
+        List<Log> pointList = logRepository.findAllByTargetId(member.getPoint().getId());
+        pointList = pointList.stream()
+                .filter(log -> log.getMethod().equals("earnPoint"))
+                .toList();
 
-        return null;
+        return pointList;
     }
 }

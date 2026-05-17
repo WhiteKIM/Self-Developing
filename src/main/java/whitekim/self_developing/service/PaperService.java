@@ -61,7 +61,6 @@ public class PaperService {
         Paper savePaper = paperRepository.save(new Paper(paper, loginMember));
 
         page.addPaper(savePaper);
-        loginMember.addPaper(savePaper);
 
         return savePaper.getId();
     }

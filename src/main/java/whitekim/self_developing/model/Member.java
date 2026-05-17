@@ -1,5 +1,6 @@
 package whitekim.self_developing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import whitekim.self_developing.dto.response.MemberDetail;
@@ -39,10 +40,12 @@ public class Member extends BaseEntity {
 
     // 작성 시험지
     @OneToMany(mappedBy = "member")
+    @JsonIgnore
     private List<Paper> paperList = new ArrayList<>();
 
     // 작성 카테고리
     @OneToMany(mappedBy = "member")
+    @JsonIgnore
     private List<Page> pageList = new ArrayList<>();
 
     @Builder.Default

@@ -10,6 +10,7 @@ import whitekim.self_developing.model.Point;
 import whitekim.self_developing.model.problem.ProblemEntity;
 import whitekim.self_developing.properties.PointProperties;
 import whitekim.self_developing.repository.LogRepository;
+import whitekim.self_developing.repository.MemberRepository;
 import whitekim.self_developing.repository.PointRepository;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 public class PointService {
     private final PointRepository pointRepository;
     private final LogRepository logRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 포인트 생성 후 저장
@@ -40,6 +42,9 @@ public class PointService {
      * @param problem - 해결한 문제
      */
     public void earnPoint(Member member, ProblemEntity problem) {
+        // 사용자 엔티티 조회
+        Long memberId = member.getId();
+        member = memberRepository.findById(memberId).orElseThrow();
         Point memberPoint = member.getPoint();
 
         if(memberPoint == null) {

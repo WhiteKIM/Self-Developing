@@ -3,6 +3,7 @@ package whitekim.self_developing.model;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
  * 3. 해당 이력정보
  */
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
